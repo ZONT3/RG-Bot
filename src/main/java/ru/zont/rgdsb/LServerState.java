@@ -123,6 +123,7 @@ public class LServerState extends ListenerAdapter {
 
         if (playersRecord >= 0) {
             int g = 255 * online / playersRecord;
+            if (g > 255) g = 255;
             int r = 255 - g;
             builder.setColor(new Color(r, g, 0));
         }
