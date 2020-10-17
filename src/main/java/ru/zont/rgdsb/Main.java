@@ -1,6 +1,5 @@
 package ru.zont.rgdsb;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -27,17 +26,19 @@ public class Main extends ListenerAdapter {
     static final long CHANNEL_PLAYERS = 765683007046287360L;
     static final long CHANNEL_STATUS  = 766376696974147665L;
 
-    public static void main(String[] args) throws LoginException, InterruptedException, InstantiationException, IllegalAccessException {
+    public static InteractAdapter[] commandAdapters = null;
+
+    public static void main(String[] args) throws LoginException, InterruptedException {
         if (args.length == 0) throw new LoginException("API token not provided!");
-        JDA bot = JDABuilder.createLight(args[0], GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MEMBERS)
+        JDABuilder.createLight(args[0], GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MEMBERS)
                 .addEventListeners(new LPlayersMonitoring(), new LServerState())
-                .addEventListeners(registerInteracts())
+                .addEventListeners((Object[]) (commandAdapters = registerInteracts()))
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .build().awaitReady();
     }
 
-    private static Object[] registerInteracts() {
+    private static InteractAdapter[] registerInteracts() {
         if (DIR_PROPS.exists() && !DIR_PROPS.isDirectory())
             if (!DIR_PROPS.delete())
                 throw new RuntimeException("Cannot remove file named as dir 'properties'");
@@ -56,7 +57,7 @@ public class Main extends ListenerAdapter {
         Set<Class<? extends InteractAdapter>> allClasses =
                 reflections.getSubTypesOf(InteractAdapter.class);
 
-        ArrayList<Object> res = new ArrayList<>();
+        ArrayList<InteractAdapter> res = new ArrayList<>();
         for (Class<? extends InteractAdapter> klass: allClasses) {
             try {
                 System.out.printf("Registering InteractAdapter class: %s\n", klass.getSimpleName());
@@ -68,6 +69,6 @@ public class Main extends ListenerAdapter {
             }
         }
 
-        return res.toArray();
+        return res.toArray(new InteractAdapter[0]);
     }
 }

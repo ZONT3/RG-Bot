@@ -43,17 +43,17 @@ public class LServerState extends ListenerAdapter {
         playersRecord = rec; playersTotal = total;
         if (serverStatusMessage == null) return;
         if (serverStatisticMessage == null) return;
-        if (time >= 45000) {
-            serverStatusMessage.editMessage(serverInactive()).queue();
-            return;
-        }
         try {
-            List<String> gmList = new Gson().fromJson(gms, new TypeToken<List<String>>(){}.getType());
-            serverStatusMessage.editMessage(formatStatusMsg(count, uptime, gmList)).queue();
+            List<String> gmList = getGmList(gms);
+            serverStatusMessage.editMessage(formatStatusMsg(count, uptime, gmList, time, playersRecord, roleGM.getAsMention())).queue();
             serverStatisticMessage.editMessage(serverStatistic()).queue();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static List<String> getGmList(String gms) {
+        return new Gson().fromJson(gms, new TypeToken<List<String>>() {}.getType());
     }
 
     private void prepareServerInfoChannel(TextChannel channel) {
@@ -93,7 +93,9 @@ public class LServerState extends ListenerAdapter {
             serverStatusMessage.delete().complete();
     }
 
-    private MessageEmbed formatStatusMsg(short online, long restart, List<String> gms) {
+    public static MessageEmbed formatStatusMsg(short online, long restart, List<String> gms, long time, short playersRecord, String gmm) {
+        if (time >= 45000) return serverInactive();
+
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle("**\u0421\u0442\u0430\u0442\u0443\u0441 \u0421\u0435\u0440\u0432\u0435\u0440\u0430**\n")
                 .addField(":green_circle: \u041e\u043d\u043b\u0430\u0439\u043d", countPlayers(online), true)
@@ -118,7 +120,7 @@ public class LServerState extends ListenerAdapter {
         if (sb1.length() > 0)
             sb.append(String.format(":zap: %26s\n", sb1.toString()));
         if (sb.length() == 0)
-            sb.append(noGmString());
+            sb.append(noGmString(gmm));
         builder.addField(":crossed_swords: \u0410\u043a\u0442\u0438\u0432\u043d\u044b\u0435 \u0413\u041c\u044b", sb.toString(), false);
 
         if (playersRecord >= 0) {
@@ -153,16 +155,16 @@ public class LServerState extends ListenerAdapter {
 //                restart / 60 % 60 );
     }
 
-    private String noGmString() {
+    private static String noGmString(String gm) {
         int h = LocalTime.now().getHour();
         if (h >= 15 && h <= 22) {
-            return ":anger: \u041e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u044e\u0442, \u043a\u0442\u043e-\u0442\u043e \u0438\u0437 " + roleGM.getAsMention() + " \u043f\u043e\u043b\u0443\u0447\u0438\u0442 \u043f\u0438\u0437\u0434\u043e\u0432...";
+            return ":anger: \u041e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u044e\u0442, \u043a\u0442\u043e-\u0442\u043e \u0438\u0437 " + gm + " \u043f\u043e\u043b\u0443\u0447\u0438\u0442 \u043f\u0438\u0437\u0434\u043e\u0432...";
         } else {
             return ":zzz: \u041e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u044e\u0442.";
         }
     }
 
-    private MessageEmbed serverInactive() {
+    private static MessageEmbed serverInactive() {
         return new EmbedBuilder()
                 .setTitle("**\u0421\u0442\u0430\u0442\u0443\u0441 \u0421\u0435\u0440\u0432\u0435\u0440\u0430**")
                 .setDescription(":tools: :clock1: :skull_crossbones: :electric_plug: :grey_question:\n\u0421\u0435\u0440\u0432\u0435\u0440 \u0432\u044B\u043A\u043B\u044E\u0447\u0435\u043D, \u043F\u0435\u0440\u0435\u0437\u0430\u043F\u0443\u0441\u043A\u0430\u0435\u0442\u0441\u044F, \u043B\u0438\u0431\u043E \u043F\u0443\u0441\u0442\n*\u0410 \u043C\u043E\u0436\u0435\u0442 \u0431\u044B\u0442\u044C, \u044F \u043F\u0440\u043E\u0441\u0442\u043E \u0435\u0433\u043E \u043D\u0435 \u0432\u0438\u0436\u0443, \u043D\u0435 \u0443\u043D\u044B\u0432\u0430\u0439\u0442\u0435!*")
@@ -187,7 +189,7 @@ public class LServerState extends ListenerAdapter {
                 .build();
     }
 
-    private String countPlayers(int count) {
+    private static String countPlayers(int count) {
         int ccount =(count % 100);
         if ((ccount < 10 || ccount > 20) && ccount % 10 >= 2 && ccount % 10 <= 4)
             return String.format("%02d \u0447\u0435\u043B\u043E\u0432\u0435\u043A\u0430", count);

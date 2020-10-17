@@ -5,9 +5,9 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.usrlib.material.MaterialColor;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,12 +18,23 @@ import java.util.Properties;
 
 public abstract class InteractAdapter extends ListenerAdapter {
     private static final String PROPS_COMMENT = "Properties of Right Games project's DS Bot Command";
+    private static final int CACHE_LIFETIME = 20000;
 
-    protected abstract String getCommandName();
+    private Properties propertiesCache = null;
+    private long propertiesCacheTS = 0;
+
+    private static Properties gPropertiesCache = null;
+    private static long gPropertiesCacheTS = 0;
+
+    public abstract String getCommandName();
 
     protected abstract Properties getDefaultProps();
 
-    protected abstract void onRequest(@NotNull MessageReceivedEvent event);
+    public abstract void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException;
+
+    public abstract String getExample();
+
+    public abstract String getDescription();
 
     protected List<Role> getRolesWhitelist() {
         return Collections.emptyList();
@@ -31,15 +42,15 @@ public abstract class InteractAdapter extends ListenerAdapter {
 
     protected void onInsufficientPermissions(@NotNull MessageReceivedEvent event) { }
 
-    protected InteractAdapter() throws RegisterException {
+    public InteractAdapter() throws RegisterException {
         String commandName = getCommandName();
-        if (!commandName.matches("[\\w.!-=+-@#$]+"))
+        if (!commandName.matches("[\\w.!-=+-@#$]+") && !commandName.isEmpty())
             throw new RegisterException("Bad command name: " + commandName);
     }
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-        String prefix = getGlobalProps().getProperty("command_prefix");
+        String prefix = getPrefix();
         String commandName = getCommandName();
         if (event.getChannelType().isGuild()) {
             if (!event.getMessage().getContentStripped().startsWith(prefix + commandName))
@@ -77,21 +88,38 @@ public abstract class InteractAdapter extends ListenerAdapter {
                 return;
             }
         }
+
         onRequest(event);
     }
 
     private Properties getProps() {
-        return getProps(getCommandName(), getDefaultProps());
+        long current = System.currentTimeMillis();
+        if (propertiesCache != null && current - propertiesCacheTS <= CACHE_LIFETIME)
+            return propertiesCache;
+
+        Properties props = getProps(getCommandName(), getDefaultProps());
+        propertiesCache = props;
+        propertiesCacheTS = current;
+        return props;
     }
 
     private void storeProps(Properties properties) {
         storeProps(getCommandName(), properties);
+        propertiesCache = properties;
+        propertiesCacheTS = System.currentTimeMillis();
     }
 
     private static Properties getGlobalProps() {
+        long current = System.currentTimeMillis();
+        if (gPropertiesCache != null && current - gPropertiesCacheTS <= CACHE_LIFETIME)
+            return gPropertiesCache;
+
         Properties def = new Properties();
         def.setProperty("command_prefix", "//");
-        return getProps("global", def);
+        Properties res = getProps("global", def);
+        gPropertiesCache = res;
+        gPropertiesCacheTS = current;
+        return res;
     }
 
     private static Properties getProps(String name, Properties defaultProps) {
@@ -125,18 +153,28 @@ public abstract class InteractAdapter extends ListenerAdapter {
         }
     }
 
-    private static void printError(MessageChannel channel, String title, String description) {
+    public static String getPrefix() {
+        return getGlobalProps().getProperty("command_prefix");
+    }
+
+    public static void printError(MessageChannel channel, String title, String description) {
         channel.sendMessage(
                 new EmbedBuilder()
                         .setTitle(title)
                         .setDescription(description)
-                        .setColor(MaterialColor.RED.getValue())
+                        .setColor(Color.RED)
                         .build()).queue();
     }
 
     protected static class RegisterException extends Exception {
         public RegisterException(String message) {
             super(message);
+        }
+    }
+
+    protected static class UserInvalidArgumentException extends RuntimeException {
+        public UserInvalidArgumentException(String s) {
+            super(s);
         }
     }
 }

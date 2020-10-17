@@ -5,9 +5,15 @@ import java.sql.*;
 public class ServerInfoWatch extends Thread {
     private Callback callback;
     private final long period;
+    private boolean once = false;
 
     public ServerInfoWatch(long period) {
         this.period = period;
+    }
+
+    public ServerInfoWatch() {
+        period = 1;
+        once = true;
     }
 
     @Override
@@ -53,7 +59,9 @@ public class ServerInfoWatch extends Thread {
                         record,
                         total );
 
-                sleep(period);
+                if (!once)
+                    sleep(period);
+                else break;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -77,7 +85,7 @@ public class ServerInfoWatch extends Thread {
         this.callback = callback;
     }
 
-    interface Callback {
+    public interface Callback {
         void onUpdate(short count, long time, long uptime, String gms, short record, int total);
     }
 
