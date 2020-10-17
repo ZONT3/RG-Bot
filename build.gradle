@@ -15,4 +15,7 @@ dependencies {
     implementation 'net.dv8tion:JDA:4.2.0_209'
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.0'
     implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'org.reflections:reflections:0.9.12'
+    implementation 'net.usrlib:material-color:0.1'
+
 }
