@@ -22,11 +22,13 @@ import java.util.*;
 public class Main extends ListenerAdapter {
     public static final File DIR_PROPS = new File("properties");
 
-    static final long ROLE_PLAYER     = 747533854625235024L;
-    static final long CHANNEL_PLAYERS = 765683007046287360L;
-    static final long CHANNEL_STATUS  = 766376696974147665L;
+    public static final long ROLE_PLAYER     = 747533854625235024L;
+    public static final long CHANNEL_PLAYERS = 765683007046287360L;
+    public static final long CHANNEL_STATUS  = 766376696974147665L;
 
     public static InteractAdapter[] commandAdapters = null;
+    public static LPlayersMonitoring playersMonitoring;
+    public static LServerState serverState;
 
     public static ResourceBundle STR = ResourceBundle.getBundle("strings", new UTF8Control());
 
@@ -37,7 +39,7 @@ public class Main extends ListenerAdapter {
 
         if (args.length == 0) throw new LoginException("API token not provided!");
         JDABuilder.createLight(args[0], GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MEMBERS)
-                .addEventListeners(new LPlayersMonitoring(), new LServerState())
+                .addEventListeners(playersMonitoring = new LPlayersMonitoring(), serverState = new LServerState())
                 .addEventListeners(new Main())
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .setChunkingFilter(ChunkingFilter.ALL)

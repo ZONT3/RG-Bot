@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import ru.zont.rgdsb.InteractAdapter;
+import ru.zont.rgdsb.Main;
 import ru.zont.rgdsb.Messages;
 import ru.zont.rgdsb.ServerInfoWatch;
 
@@ -43,7 +44,11 @@ public class Status extends InteractAdapter {
         ServerInfoWatch watch = new ServerInfoWatch();
         watch.setCallback(struct -> {
             MessageEmbed e = Messages.status(struct, finalGmMention);
-            e = new EmbedBuilder(e).setTimestamp(Instant.now()).build();
+            EmbedBuilder builder = new EmbedBuilder(e)
+                    .setTimestamp(Instant.now());
+            if (Main.serverState != null && Main.serverState.getServerStatusMessage() != null)
+                builder.setDescription(String.format("%s:\n%s", STR.getString("comm.status.link_live"), Main.serverState.getServerStatusMessage().getJumpUrl()));
+            e = builder.build();
             event.getChannel().sendMessage(e).queue();
         });
         watch.start();

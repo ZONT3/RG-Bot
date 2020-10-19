@@ -72,6 +72,13 @@ public class LServerState extends ListenerAdapter {
                 });
     }
 
+    public Message getServerStatusMessage() {
+        return serverStatusMessage;
+    }
+
+    public Message getServerStatisticMessage() {
+        return serverStatisticMessage;
+    }
 
     @Override
     public void onShutdown(@NotNull ShutdownEvent event) {
