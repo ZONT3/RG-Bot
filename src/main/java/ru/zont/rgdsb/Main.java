@@ -1,6 +1,7 @@
 package ru.zont.rgdsb;
 
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
@@ -12,12 +13,10 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 
+import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Main extends ListenerAdapter {
     public static final File DIR_PROPS = new File("properties");
@@ -28,14 +27,23 @@ public class Main extends ListenerAdapter {
 
     public static InteractAdapter[] commandAdapters = null;
 
+    public static ResourceBundle STR = ResourceBundle.getBundle("strings", new UTF8Control());
+
     public static void main(String[] args) throws LoginException, InterruptedException {
+        commandAdapters = registerInteracts();
+
         if (args.length == 0) throw new LoginException("API token not provided!");
         JDABuilder.createLight(args[0], GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MEMBERS)
                 .addEventListeners(new LPlayersMonitoring(), new LServerState())
-                .addEventListeners((Object[]) (commandAdapters = registerInteracts()))
+                .addEventListeners(new Main())
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .build().awaitReady();
+    }
+
+    @Override
+    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+        InteractAdapter.onMessageReceived(event, commandAdapters);
     }
 
     private static InteractAdapter[] registerInteracts() {

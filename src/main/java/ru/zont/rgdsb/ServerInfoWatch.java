@@ -1,6 +1,10 @@
 package ru.zont.rgdsb;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.sql.*;
+import java.util.List;
 
 public class ServerInfoWatch extends Thread {
     private Callback callback;
@@ -51,13 +55,13 @@ public class ServerInfoWatch extends Thread {
 
                 if (record < count) commitRecord(st, record);
 
-                callback(
+                callback( new ServerInfoStruct(
                         count,
                         currentTime - updated,
                         servertime,
-                        gms,
+                        jsonList(gms),
                         record,
-                        total );
+                        total ));
 
                 if (!once)
                     sleep(period);
@@ -68,6 +72,10 @@ public class ServerInfoWatch extends Thread {
         } catch (InterruptedException ignored) { }
     }
 
+    private List<String> jsonList(String gms) {
+        return new Gson().fromJson(gms, new TypeToken<List<String>>() {}.getType());
+    }
+
     private void commitRecord(Statement st, short record) throws SQLException {
         st.executeUpdate(
                 "UPDATE server_info\n" +
@@ -76,9 +84,9 @@ public class ServerInfoWatch extends Thread {
                 "    LIMIT 1");
     }
 
-    private void callback(short count, long time, long uptime, String gms, short record, int total) {
+    private void callback(ServerInfoStruct struct) {
         if (callback != null)
-            callback.onUpdate(count, time, uptime, gms, record, total);
+            callback.onUpdate(struct);
     }
 
     public void setCallback(Callback callback) {
@@ -86,12 +94,30 @@ public class ServerInfoWatch extends Thread {
     }
 
     public interface Callback {
-        void onUpdate(short count, long time, long uptime, String gms, short record, int total);
+        void onUpdate(ServerInfoStruct struct);
     }
 
     private static class NoResponseException extends SQLException {
         public NoResponseException() {
             super("No response from DB");
+        }
+    }
+
+    public static class ServerInfoStruct {
+        short count;
+        long time;
+        long uptime;
+        List<String> gms;
+        short record;
+        int total;
+
+        public ServerInfoStruct(short count, long time, long uptime, List<String> gms, short record, int total) {
+            this.count = count;
+            this.time = time;
+            this.uptime = uptime;
+            this.gms = gms;
+            this.record = record;
+            this.total = total;
         }
     }
 }

@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import ru.zont.rgdsb.Commands;
 import ru.zont.rgdsb.InteractAdapter;
+import ru.zont.rgdsb.Messages;
 
 import java.awt.*;
 import java.util.Map;
@@ -32,7 +33,7 @@ public class Help extends InteractAdapter {
         boolean b = !inpt.isEmpty();
         if (b) comm = Commands.getCommandByName(inpt);
         if (comm == null) {
-            if (b) printError(event.getChannel(), "\u041D\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u043D\u0430\u044F \u043A\u043E\u043C\u0430\u043D\u0434\u0430", "\u041F\u0435\u0447\u0430\u0442\u0430\u044E \u0442\u0435\u0431\u0435 \u0432\u0435\u0441\u044C \u0441\u043F\u0438\u0441\u043E\u043A");
+            if (b) Messages.printError(event.getChannel(), "\u041D\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u043D\u0430\u044F \u043A\u043E\u043C\u0430\u043D\u0434\u0430", "\u041F\u0435\u0447\u0430\u0442\u0430\u044E \u0442\u0435\u0431\u0435 \u0432\u0435\u0441\u044C \u0441\u043F\u0438\u0441\u043E\u043A");
             EmbedBuilder builder = new EmbedBuilder()
                     .setTitle("\u0421\u043F\u0438\u0441\u043E\u043A \u043A\u043E\u043C\u0430\u043D\u0434")
                     .setColor(Color.LIGHT_GRAY);
