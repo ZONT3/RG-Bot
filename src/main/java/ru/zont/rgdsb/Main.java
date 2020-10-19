@@ -1,5 +1,6 @@
 package ru.zont.rgdsb;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -29,6 +30,8 @@ public class Main extends ListenerAdapter {
 
     public static ResourceBundle STR = ResourceBundle.getBundle("strings", new UTF8Control());
 
+    public static String ZONT_MENTION = "<@331524458806247426>";
+
     public static void main(String[] args) throws LoginException, InterruptedException {
         commandAdapters = registerInteracts();
 
@@ -43,7 +46,17 @@ public class Main extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
-        InteractAdapter.onMessageReceived(event, commandAdapters);
+        try {
+            InteractAdapter.onMessageReceived(event, commandAdapters);
+        } catch (Exception e) {
+            e.printStackTrace();
+            event.getChannel().sendMessage(
+                    new EmbedBuilder( Messages.error(
+                            STR.getString("err.unexpected"),
+                            String.format("%s: %s", e.getClass().getName(), e.getLocalizedMessage())))
+                    .setFooter(STR.getString("err.unexpected.foot"))
+                    .build()).queue();
+        }
     }
 
     private static InteractAdapter[] registerInteracts() {

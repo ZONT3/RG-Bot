@@ -133,7 +133,7 @@ public abstract class InteractAdapter {
 
         System.out.printf("Command received: '%s' from user %s\n", commandName, event.getAuthor().getAsTag());
         if (adapter == null) {
-            Messages.printError(event.getChannel(), STR.getString("err.unknown_command.title"), STR.getString("err.unknown_command"));
+            Messages.printError(event.getChannel(), STR.getString("err.unknown_command.title"), String.format(STR.getString("err.unknown_command"), ZONT_MENTION));
             return;
         }
         if (event.isWebhookMessage()) {
