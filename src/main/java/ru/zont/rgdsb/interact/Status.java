@@ -56,6 +56,6 @@ public class Status extends InteractAdapter {
 
     @Override
     public String getDescription() {
-        return "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0441\u0442\u0430\u0442\u0443\u0441 \u0441\u0435\u0440\u0432\u0435\u0440\u0430 \u043D\u0430 \u0442\u0435\u043A\u0443\u0449\u0438\u0439 \u043C\u043E\u043C\u0435\u043D\u0442";
+        return STR.getString("comm.status.desc");
     }
 }

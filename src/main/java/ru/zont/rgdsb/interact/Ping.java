@@ -8,6 +8,8 @@ import ru.zont.rgdsb.InteractAdapter;
 
 import java.util.Properties;
 
+import static ru.zont.rgdsb.Main.STR;
+
 public class Ping extends InteractAdapter {
     public Ping() throws RegisterException {
         super();
@@ -30,7 +32,7 @@ public class Ping extends InteractAdapter {
 
     @Override
     public String getDescription() {
-        return "\u041F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0435\u0442 \u0437\u0430\u0434\u0435\u0440\u0436\u043A\u0443 ~~\u0432 \u0440\u0430\u0437\u0432\u0438\u0442\u0438\u0438~~ \u0440\u0435\u0430\u043A\u0446\u0438\u0438 \u0431\u043E\u0442\u0430";
+        return STR.getString("comm.ping.desc");
     }
 
     @Override
