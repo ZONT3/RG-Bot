@@ -1,6 +1,8 @@
 package ru.zont.rgdsb.interact;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -9,6 +11,7 @@ import ru.zont.rgdsb.InteractAdapter;
 import ru.zont.rgdsb.LOG;
 import ru.zont.rgdsb.Messages;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -121,6 +124,11 @@ public class Config extends InteractAdapter {
             comm.storeProps(props);
         }
 
+    }
+
+    @Override
+    public boolean checkPermission(@Nullable Member member) {
+        return member != null && member.hasPermission(Permission.ADMINISTRATOR);
     }
 
     private void throwUnknownComm(String command) {

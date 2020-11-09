@@ -1,15 +1,14 @@
 package ru.zont.rgdsb;
 
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 
 import static ru.zont.rgdsb.Main.*;
@@ -34,9 +33,7 @@ public abstract class InteractAdapter {
 
     public abstract String getDescription();
 
-    protected List<Role> getRolesWhitelist() {
-        return Collections.emptyList();
-    }
+    public boolean checkPermission(@Nullable Member member) { return true; }
 
     protected void onInsufficientPermissions(@NotNull MessageReceivedEvent event) { }
 
@@ -158,27 +155,15 @@ public abstract class InteractAdapter {
             return;
         }
 
-        List<Role> wl = adapter.getRolesWhitelist();
-        if (wl.size() > 0 && event.getMember() == null) {
+        boolean permission = adapter.checkPermission(event.getMember());
+        if (!permission && event.getMember() == null) {
             Messages.printError(event.getChannel(), STR.getString("err.unknown_perm.title"), STR.getString("err.unknown_perm"));
             return;
         }
-        if (wl.size() > 0) {
-            boolean permitted = false;
-            outer:
-            for (Role mr: event.getMember().getRoles()) {
-                for (Role ar: wl) {
-                    if (mr.getIdLong() == ar.getIdLong()) {
-                        permitted = true;
-                        break outer;
-                    }
-                }
-            }
-            if (!permitted) {
-                Messages.printError(event.getChannel(), STR.getString("err.insufficient_perm.title"), STR.getString("err.insufficient_perm"));
-                adapter.onInsufficientPermissions(event);
-                return;
-            }
+        if (!permission) {
+            Messages.printError(event.getChannel(), STR.getString("err.insufficient_perm.title"), STR.getString("err.insufficient_perm"));
+            adapter.onInsufficientPermissions(event);
+            return;
         }
 
         try {
