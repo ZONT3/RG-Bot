@@ -35,7 +35,9 @@ public abstract class InteractAdapter {
 
     public boolean checkPermission(@Nullable Member member) { return true; }
 
-    protected void onInsufficientPermissions(@NotNull MessageReceivedEvent event) { }
+    protected void onInsufficientPermissions(@NotNull MessageReceivedEvent event) {
+        Messages.printError(event.getChannel(), STR.getString("err.insufficient_perm.title"), STR.getString("err.insufficient_perm"));
+    }
 
     public InteractAdapter() throws RegisterException {
         String commandName = getCommandName();
@@ -161,7 +163,6 @@ public abstract class InteractAdapter {
             return;
         }
         if (!permission) {
-            Messages.printError(event.getChannel(), STR.getString("err.insufficient_perm.title"), STR.getString("err.insufficient_perm"));
             adapter.onInsufficientPermissions(event);
             return;
         }

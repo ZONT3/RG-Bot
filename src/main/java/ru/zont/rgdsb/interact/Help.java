@@ -42,7 +42,8 @@ public class Help extends InteractAdapter {
             for (Map.Entry<String, InteractAdapter> e: Commands.getAllCommands().entrySet())
                 builder.addField(
                         e.getKey(),
-                        String.format("`%s`: %s",
+                        String.format("`%s%s`: %s",
+                                event.getMember()!=null ? getPrefix() : "",
                                 e.getValue().getExample(),
                                 e.getValue().getDescription().substring(0, Math.min(90, e.getValue().getDescription().length()))
                                         + (e.getValue().getDescription().length() > 90 ? "..." : "")),
