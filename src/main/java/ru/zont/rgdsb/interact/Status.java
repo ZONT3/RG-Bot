@@ -23,7 +23,7 @@ public class Status extends InteractAdapter {
     }
 
     @Override
-    protected Properties getDefaultProps() {
+    protected Properties getPropsDefaults() {
         return null;
     }
 

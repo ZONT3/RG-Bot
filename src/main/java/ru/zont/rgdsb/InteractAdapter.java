@@ -26,7 +26,7 @@ public abstract class InteractAdapter {
 
     public abstract String getCommandName();
 
-    protected abstract Properties getDefaultProps();
+    protected abstract Properties getPropsDefaults();
 
     public abstract void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException;
 
@@ -44,6 +44,8 @@ public abstract class InteractAdapter {
         String commandName = getCommandName();
         if (!commandName.matches("[\\w.!-=+-@#$]+") && !commandName.isEmpty())
             throw new RegisterException("Bad command name: " + commandName);
+        if (getPropsDefaults() != null)
+            writeDefaultProps();
     }
 
     private Properties getProps() {
@@ -51,7 +53,7 @@ public abstract class InteractAdapter {
         if (propertiesCache != null && current - propertiesCacheTS <= CACHE_LIFETIME)
             return propertiesCache;
 
-        Properties props = getProps(getCommandName(), getDefaultProps());
+        Properties props = getProps(getCommandName(), getPropsDefaults());
         propertiesCache = props;
         propertiesCacheTS = current;
         return props;
@@ -180,6 +182,17 @@ public abstract class InteractAdapter {
         }
 
         adapter.onRequest(event);
+    }
+
+    public void writeDefaultProps() {
+        String name = getCommandName();
+        if (!new File(DIR_PROPS, name + ".properties").exists())
+            storeProps(name, getPropsDefaults());
+    }
+
+    public static void writeDefaultGlobalProps() {
+        if (!new File(DIR_PROPS, "global.properties").exists())
+            storeGlobalProps(getGlobalPropsDefaults());
     }
 
     protected static class RegisterException extends Exception {

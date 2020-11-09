@@ -24,7 +24,7 @@ public class Help extends InteractAdapter {
     }
 
     @Override
-    public Properties getDefaultProps() {
+    public Properties getPropsDefaults() {
         return null;
     }
 

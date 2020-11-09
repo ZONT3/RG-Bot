@@ -33,6 +33,8 @@ public class Main extends ListenerAdapter {
     public static void main(String[] args) throws LoginException, InterruptedException {
         commandAdapters = registerInteracts();
 
+        InteractAdapter.writeDefaultGlobalProps();
+
         if (args.length == 0) throw new LoginException("API token not provided!");
         JDABuilder.createLight(args[0], GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MEMBERS)
                 .addEventListeners(playersMonitoring = new LPlayersMonitoring(), serverState = new LServerState())
