@@ -53,7 +53,7 @@ public class Status extends InteractAdapter {
 
     @Override
     public String getExample() {
-        return getPrefix() + "status";
+        return "status";
     }
 
     @Override

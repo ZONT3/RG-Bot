@@ -27,7 +27,7 @@ public class Ping extends InteractAdapter {
 
     @Override
     public String getExample() {
-        return getPrefix() + "ping";
+        return "ping";
     }
 
     @Override

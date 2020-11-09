@@ -52,7 +52,9 @@ public class Help extends InteractAdapter {
             event.getChannel().sendMessage(
                     new EmbedBuilder()
                             .setTitle(comm.getCommandName())
-                            .addField(STR.getString("comm.help.entry.example"), String.format("`%s`", comm.getExample()), false)
+                            .addField(STR.getString("comm.help.entry.example"), String.format("`%s%s`",
+                                    event.getMember()!=null ? getPrefix() : "", comm.getExample()
+                            ), false)
                             .addField(STR.getString("comm.help.entry.desc"), comm.getDescription(), false)
                             .setColor(Color.LIGHT_GRAY)
                             .build()
@@ -62,7 +64,7 @@ public class Help extends InteractAdapter {
 
     @Override
     public String getExample() {
-        return getPrefix() + "help [command]";
+        return "help [command]";
     }
 
     @Override

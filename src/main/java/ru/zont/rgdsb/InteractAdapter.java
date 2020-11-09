@@ -181,7 +181,14 @@ public abstract class InteractAdapter {
             }
         }
 
-        adapter.onRequest(event);
+        try {
+            adapter.onRequest(event);
+        } catch (UserInvalidArgumentException e) {
+            event.getChannel()
+                    .sendMessage(
+                            Messages.error(STR.getString("err.args.title"), e.getMessage()) )
+                    .queue();
+        }
     }
 
     public void writeDefaultProps() {
