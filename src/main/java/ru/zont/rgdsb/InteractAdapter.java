@@ -48,7 +48,7 @@ public abstract class InteractAdapter {
             writeDefaultProps();
     }
 
-    private Properties getProps() {
+    public Properties getProps() {
         long current = System.currentTimeMillis();
         if (propertiesCache != null && current - propertiesCacheTS <= CACHE_LIFETIME)
             return propertiesCache;
@@ -59,7 +59,7 @@ public abstract class InteractAdapter {
         return props;
     }
 
-    private void storeProps(Properties properties) {
+    public void storeProps(Properties properties) {
         storeProps(getCommandName(), properties);
         propertiesCache = properties;
         propertiesCacheTS = System.currentTimeMillis();
@@ -148,7 +148,7 @@ public abstract class InteractAdapter {
             break;
         }
 
-        System.out.printf("Command received: '%s' from user %s\n", commandName, event.getAuthor().getAsTag());
+        LOG.d("Command received: '%s' from user %s", commandName, event.getAuthor().getAsTag());
         if (adapter == null) {
             Messages.printError(event.getChannel(), STR.getString("err.unknown_command.title"), String.format(STR.getString("err.unknown_command"), ZONT_MENTION));
             return;
@@ -185,13 +185,15 @@ public abstract class InteractAdapter {
             adapter.onRequest(event);
         } catch (UserInvalidArgumentException e) {
             event.getChannel()
-                    .sendMessage(
-                            Messages.error(STR.getString("err.args.title"), e.getMessage()) )
+                    .sendMessage(Messages.error(
+                            STR.getString("err.args.title"),
+                            e.getMessage() + (e.printSyntax ? ("\n\n" +
+                                    String.format(STR.getString("err.args.syntax"), adapter.getExample())) : "") ))
                     .queue();
         }
     }
 
-    public void writeDefaultProps() {
+    private void writeDefaultProps() {
         String name = getCommandName();
         if (!new File(DIR_PROPS, name + ".properties").exists())
             storeProps(name, getPropsDefaults());
@@ -209,8 +211,13 @@ public abstract class InteractAdapter {
     }
 
     protected static class UserInvalidArgumentException extends RuntimeException {
+        boolean printSyntax = true;
         public UserInvalidArgumentException(String s) {
             super(s);
+        }
+        public UserInvalidArgumentException(String s, boolean printSyntax) {
+            super(s);
+            this.printSyntax = printSyntax;
         }
     }
 }

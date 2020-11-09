@@ -53,10 +53,10 @@ public class LPlayersMonitoring extends ListenerAdapter {
         if (channel == null) return;
 
         int size = guild.getMembersWithRoles(role).size();
-        System.out.printf("Updating players: %d\n", size);
+        LOG.d("Updating players: %d", size);
         channel
                 .getManager()
                 .setName( String.format(formattedDisplay, size) )
-                .queue(v -> System.out.println("Queued"));
+                .queue(v -> LOG.d("Queued"));
     }
 }

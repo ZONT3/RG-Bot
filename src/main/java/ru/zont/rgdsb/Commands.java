@@ -3,10 +3,11 @@ package ru.zont.rgdsb;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Commands {
     public static String[] parseArgs(InteractAdapter adapter, MessageReceivedEvent event) {
-        String msg = parseInput(adapter, event).trim();
+        String msg = parseInput(adapter, event);
         if (msg.isEmpty()) return new String[0];
         return ArgumentTokenizer.tokenize(msg).toArray(new String[0]);
     }
@@ -18,7 +19,7 @@ public class Commands {
         if (msg.startsWith(InteractAdapter.getPrefix()))
             msg = msg.replaceFirst(InteractAdapter.getPrefix() + adapter.getCommandName(), "");
         else msg = msg.replaceFirst(adapter.getCommandName(), "");
-        return msg;
+        return msg.trim();
     }
 
     public static HashMap<String, InteractAdapter> getAllCommands() {
@@ -29,10 +30,12 @@ public class Commands {
         return res;
     }
 
-    public static InteractAdapter getCommandByName(String name) {
-        for (InteractAdapter a: Main.commandAdapters)
-            if (a.getCommandName().equals(name))
-                return a;
-        return null;
+    public static InteractAdapter forName(String command) {
+        InteractAdapter comm = null;
+        HashMap<String, InteractAdapter> comms = Commands.getAllCommands();
+        for (Map.Entry<String, InteractAdapter> entry: comms.entrySet())
+            if (command.toLowerCase().equals(entry.getKey().toLowerCase()))
+                comm = entry.getValue();
+        return comm;
     }
 }

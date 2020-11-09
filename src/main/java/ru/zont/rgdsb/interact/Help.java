@@ -30,10 +30,10 @@ public class Help extends InteractAdapter {
 
     @Override
     public void onRequest(@NotNull MessageReceivedEvent event) {
-        String inpt = Commands.parseInput(this, event).trim();
+        String inpt = Commands.parseInput(this, event);
         InteractAdapter comm = null;
         boolean b = !inpt.isEmpty();
-        if (b) comm = Commands.getCommandByName(inpt);
+        if (b) comm = Commands.forName(inpt);
         if (comm == null) {
             if (b) Messages.printError(event.getChannel(), STR.getString("comm.help.err.unknown.title"), STR.getString("comm.help.err.unknown"));
             EmbedBuilder builder = new EmbedBuilder()
