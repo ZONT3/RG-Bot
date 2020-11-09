@@ -10,7 +10,7 @@ import ru.zont.rgdsb.*;
 import java.time.Instant;
 import java.util.Properties;
 
-import static ru.zont.rgdsb.Main.STR;
+import static ru.zont.rgdsb.Strings.STR;
 
 public class Status extends InteractAdapter {
     public Status() throws RegisterException {

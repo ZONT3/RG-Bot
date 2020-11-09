@@ -36,7 +36,7 @@ public abstract class InteractAdapter {
     public boolean checkPermission(@Nullable Member member) { return true; }
 
     protected void onInsufficientPermissions(@NotNull MessageReceivedEvent event) {
-        Messages.printError(event.getChannel(), STR.getString("err.insufficient_perm.title"), STR.getString("err.insufficient_perm"));
+        Messages.printError(event.getChannel(), Strings.STR.getString("err.insufficient_perm.title"), Strings.STR.getString("err.insufficient_perm"));
     }
 
     public InteractAdapter() throws RegisterException {
@@ -84,10 +84,10 @@ public abstract class InteractAdapter {
 
     private static Properties getGlobalPropsDefaults() {
         return new Properties(){{
-            setProperty("ROLE_PLAYER", "747533854625235024");
-            setProperty("ROLE_GM", "747511188690305115");
-            setProperty("CHANNEL_PLAYERS", "765683007046287360");
-            setProperty("CHANNEL_STATUS", "766376696974147665");
+            setProperty("ROLE_PLAYER", "0");
+            setProperty("ROLE_GM", "0");
+            setProperty("CHANNEL_PLAYERS", "0");
+            setProperty("CHANNEL_STATUS", "0");
             setProperty("command_prefix", "//");
         }};
     }
@@ -95,7 +95,7 @@ public abstract class InteractAdapter {
     private static Properties getProps(String name, Properties defaultProps) {
         if (defaultProps == null) defaultProps = new Properties();
 
-        File propsFile = new File(DIR_PROPS, name + ".properties");
+        File propsFile = new File(PropertiesTools.DIR_PROPS, name + ".properties");
         if (!propsFile.exists()) {
             try (FileOutputStream os = new FileOutputStream(propsFile)) {
                 defaultProps.store(os, PROPS_COMMENT);
@@ -115,7 +115,7 @@ public abstract class InteractAdapter {
     }
 
     private static void storeProps(String name, Properties properties) {
-        File propsFile = new File(DIR_PROPS, name + ".properties");
+        File propsFile = new File(PropertiesTools.DIR_PROPS, name + ".properties");
         try (FileOutputStream os = new FileOutputStream(propsFile)) {
             properties.store(os, PROPS_COMMENT);
         } catch (IOException e) {
@@ -149,7 +149,7 @@ public abstract class InteractAdapter {
 
         LOG.d("Command received: '%s' from user %s", commandName, event.getAuthor().getAsTag());
         if (adapter == null) {
-            Messages.printError(event.getChannel(), STR.getString("err.unknown_command.title"), String.format(STR.getString("err.unknown_command"), ZONT_MENTION));
+            Messages.printError(event.getChannel(), Strings.STR.getString("err.unknown_command.title"), String.format(Strings.STR.getString("err.unknown_command"), ZONT_MENTION));
             return;
         }
         if (event.isWebhookMessage()) {
@@ -159,7 +159,7 @@ public abstract class InteractAdapter {
 
         boolean permission = adapter.checkPermission(event.getMember());
         if (!permission && event.getMember() == null) {
-            Messages.printError(event.getChannel(), STR.getString("err.unknown_perm.title"), STR.getString("err.unknown_perm"));
+            Messages.printError(event.getChannel(), Strings.STR.getString("err.unknown_perm.title"), Strings.STR.getString("err.unknown_perm"));
             return;
         }
         if (!permission) {
@@ -172,21 +172,21 @@ public abstract class InteractAdapter {
         } catch (UserInvalidArgumentException e) {
             event.getChannel()
                     .sendMessage(Messages.error(
-                            STR.getString("err.args.title"),
+                            Strings.STR.getString("err.args.title"),
                             e.getMessage() + (e.printSyntax ? ("\n\n" +
-                                    String.format(STR.getString("err.args.syntax"), adapter.getExample())) : "") ))
+                                    String.format(Strings.STR.getString("err.args.syntax"), adapter.getExample())) : "") ))
                     .queue();
         }
     }
 
     private void writeDefaultProps() {
         String name = getCommandName();
-        if (!new File(DIR_PROPS, name + ".properties").exists())
+        if (!new File(PropertiesTools.DIR_PROPS, name + ".properties").exists())
             storeProps(name, getPropsDefaults());
     }
 
     public static void writeDefaultGlobalProps() {
-        if (!new File(DIR_PROPS, "global.properties").exists())
+        if (!new File(PropertiesTools.DIR_PROPS, "global.properties").exists())
             storeGlobalProps(getGlobalPropsDefaults());
     }
 
@@ -206,4 +206,5 @@ public abstract class InteractAdapter {
             this.printSyntax = printSyntax;
         }
     }
+
 }

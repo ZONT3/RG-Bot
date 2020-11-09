@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static ru.zont.rgdsb.Main.STR;
+import static ru.zont.rgdsb.Strings.STR;
 
 public class Config extends InteractAdapter {
     public Config() throws RegisterException {

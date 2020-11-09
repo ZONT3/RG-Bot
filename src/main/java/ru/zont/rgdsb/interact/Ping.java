@@ -8,7 +8,7 @@ import ru.zont.rgdsb.InteractAdapter;
 
 import java.util.Properties;
 
-import static ru.zont.rgdsb.Main.STR;
+import static ru.zont.rgdsb.Strings.STR;
 
 public class Ping extends InteractAdapter {
     public Ping() throws RegisterException {

@@ -16,17 +16,12 @@ import org.reflections.util.FilterBuilder;
 
 import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
-import java.io.File;
 import java.util.*;
 
 public class Main extends ListenerAdapter {
-    public static final File DIR_PROPS = new File("properties");
-
     public static InteractAdapter[] commandAdapters = null;
     public static LPlayersMonitoring playersMonitoring;
     public static LServerState serverState;
-
-    public static ResourceBundle STR = ResourceBundle.getBundle("strings", new UTF8Control());
 
     public static String ZONT_MENTION = "<@331524458806247426>";
 
@@ -52,19 +47,19 @@ public class Main extends ListenerAdapter {
             e.printStackTrace();
             event.getChannel().sendMessage(
                     new EmbedBuilder( Messages.error(
-                            STR.getString("err.unexpected"),
+                            Strings.STR.getString("err.unexpected"),
                             String.format("%s: %s", e.getClass().getName(), e.getLocalizedMessage())))
-                    .setFooter(STR.getString("err.unexpected.foot"))
+                    .setFooter(Strings.STR.getString("err.unexpected.foot"))
                     .build()).queue();
         }
     }
 
     private static InteractAdapter[] registerInteracts() {
-        if (DIR_PROPS.exists() && !DIR_PROPS.isDirectory())
-            if (!DIR_PROPS.delete())
+        if (PropertiesTools.DIR_PROPS.exists() && !PropertiesTools.DIR_PROPS.isDirectory())
+            if (!PropertiesTools.DIR_PROPS.delete())
                 throw new RuntimeException("Cannot remove file named as dir 'properties'");
-        if (!DIR_PROPS.exists())
-            if (!DIR_PROPS.mkdir())
+        if (!PropertiesTools.DIR_PROPS.exists())
+            if (!PropertiesTools.DIR_PROPS.mkdir())
                 throw new RuntimeException("Cannot create properties dir");
 
         List<ClassLoader> classLoadersList = new LinkedList<>();

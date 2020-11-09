@@ -11,7 +11,7 @@ import java.awt.*;
 import java.util.Map;
 import java.util.Properties;
 
-import static ru.zont.rgdsb.Main.STR;
+import static ru.zont.rgdsb.Strings.STR;
 
 public class Help extends InteractAdapter {
     public Help() throws RegisterException {

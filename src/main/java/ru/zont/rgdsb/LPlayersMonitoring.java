@@ -10,8 +10,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
 
-import static ru.zont.rgdsb.Main.*;
-
 public class LPlayersMonitoring extends ListenerAdapter {
     private boolean ready = false;
 
@@ -45,7 +43,7 @@ public class LPlayersMonitoring extends ListenerAdapter {
     }
 
     private static void displayPlayersTotal(Guild guild) {
-        displayMembersWithRole(guild, guild.getRoleById(PropertiesTools.getPlayerRoleID()), PropertiesTools.getChannelPlayersID(), STR.getString("plmon.players"));
+        displayMembersWithRole(guild, guild.getRoleById(PropertiesTools.getPlayerRoleID()), PropertiesTools.getChannelPlayersID(), Strings.STR.getString("plmon.players"));
     }
 
     private static void displayMembersWithRole(Guild guild, Role role, String channelId, String formattedDisplay) {

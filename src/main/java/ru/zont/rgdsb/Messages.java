@@ -8,7 +8,7 @@ import java.awt.*;
 import java.time.LocalTime;
 import java.util.List;
 
-import static ru.zont.rgdsb.Main.STR;
+import static ru.zont.rgdsb.Strings.STR;
 
 public class Messages {
     public static MessageEmbed error(String title, String description) {
@@ -35,7 +35,7 @@ public class Messages {
 
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle(STR.getString("servstate.title"))
-                .addField(STR.getString("servstate.online"), countPlayers(online), true)
+                .addField(STR.getString("servstate.online"), Strings.countPlayers(online), true)
                 .addField(
                         STR.getString("servstate.restart"),
                         String.format( STR.getString("time.hm"),
@@ -99,16 +99,9 @@ public class Messages {
         return new EmbedBuilder()
                 .setColor(Color.lightGray)
                 .setTitle(STR.getString("servstats.title"))
-                .addField(STR.getString("servstats.record"), countPlayers(playersRecord), false)
-                .addField(STR.getString("servstats.total"), countPlayers(playersTotal), false)
+                .addField(STR.getString("servstats.record"), Strings.countPlayers(playersRecord), false)
+                .addField(STR.getString("servstats.total"), Strings.countPlayers(playersTotal), false)
                 .build();
-    }
-
-    private static String countPlayers(int count) {
-        int ccount =(count % 100);
-        if ((ccount < 10 || ccount > 20) && ccount % 10 >= 2 && ccount % 10 <= 4)
-            return String.format(STR.getString("plurals.players.few"), count);
-        else return String.format(STR.getString("plurals.players.other"), count);
     }
 
     private static String trimNick(String nick) {
