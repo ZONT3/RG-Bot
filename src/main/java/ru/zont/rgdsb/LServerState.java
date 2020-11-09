@@ -12,8 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-import static ru.zont.rgdsb.Main.CHANNEL_STATUS;
-
 public class LServerState extends ListenerAdapter {
     private ServerInfoWatch siw = null;
 
@@ -27,8 +25,8 @@ public class LServerState extends ListenerAdapter {
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
         for (Guild guild: event.getJDA().getGuilds()) {
-            TextChannel channel = guild.getTextChannelById(CHANNEL_STATUS);
-            Role r = guild.getRoleById(747511188690305115L);
+            TextChannel channel = guild.getTextChannelById(PropertiesTools.getChannelStatusID());
+            Role r = guild.getRoleById(PropertiesTools.getRoleGmID());
             if (channel != null && r != null) {
                 prepareServerInfoChannel(channel);
                 roleGM = r;

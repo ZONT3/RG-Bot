@@ -5,10 +5,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.rgdsb.InteractAdapter;
-import ru.zont.rgdsb.Main;
-import ru.zont.rgdsb.Messages;
-import ru.zont.rgdsb.ServerInfoWatch;
+import ru.zont.rgdsb.*;
 
 import java.time.Instant;
 import java.util.Properties;
@@ -34,7 +31,7 @@ public class Status extends InteractAdapter {
     public void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException {
         Role gm = null;
         try {
-            gm = event.getGuild().getRoleById(747511188690305115L);
+            gm = event.getGuild().getRoleById(PropertiesTools.getRoleGmID());
         } catch (Exception ignored) { }
         String gmMention = STR.getString("comm.status.gm_mention_pc");
         if (gm != null)

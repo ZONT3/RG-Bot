@@ -63,17 +63,32 @@ public abstract class InteractAdapter {
         propertiesCacheTS = System.currentTimeMillis();
     }
 
-    private static Properties getGlobalProps() {
+    public static void storeGlobalProps(Properties properties) {
+        storeProps("global", properties);
+        gPropertiesCache = properties;
+        gPropertiesCacheTS = System.currentTimeMillis();
+    }
+
+    public static Properties getGlobalProps() {
         long current = System.currentTimeMillis();
         if (gPropertiesCache != null && current - gPropertiesCacheTS <= CACHE_LIFETIME)
             return gPropertiesCache;
 
-        Properties def = new Properties();
-        def.setProperty("command_prefix", "//");
+        Properties def = InteractAdapter.getGlobalPropsDefaults();
         Properties res = getProps("global", def);
         gPropertiesCache = res;
         gPropertiesCacheTS = current;
         return res;
+    }
+
+    private static Properties getGlobalPropsDefaults() {
+        return new Properties(){{
+            setProperty("ROLE_PLAYER", "747533854625235024");
+            setProperty("ROLE_GM", "747511188690305115");
+            setProperty("CHANNEL_PLAYERS", "765683007046287360");
+            setProperty("CHANNEL_STATUS", "766376696974147665");
+            setProperty("command_prefix", "//");
+        }};
     }
 
     private static Properties getProps(String name, Properties defaultProps) {

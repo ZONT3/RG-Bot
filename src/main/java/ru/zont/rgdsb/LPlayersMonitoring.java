@@ -27,7 +27,7 @@ public class LPlayersMonitoring extends ListenerAdapter {
         if (!ready) return;
         event.getGuild().loadMembers().onSuccess(members -> {
             for (Role role: event.getRoles())
-                if (role.getIdLong() == ROLE_PLAYER) {
+                if (role.getId().equals(PropertiesTools.getPlayerRoleID())) {
                     displayPlayersTotal(role.getGuild());
                     return;
                 }
@@ -38,17 +38,17 @@ public class LPlayersMonitoring extends ListenerAdapter {
     public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {
         if (!ready) return;
         for (Role role: event.getRoles())
-            if (role.getIdLong() == ROLE_PLAYER) {
+            if (role.getId().equals(PropertiesTools.getPlayerRoleID())) {
                 displayPlayersTotal(role.getGuild());
                 return;
             }
     }
 
     private static void displayPlayersTotal(Guild guild) {
-        displayMembersWithRole(guild, guild.getRoleById(ROLE_PLAYER), CHANNEL_PLAYERS, STR.getString("plmon.players"));
+        displayMembersWithRole(guild, guild.getRoleById(PropertiesTools.getPlayerRoleID()), PropertiesTools.getChannelPlayersID(), STR.getString("plmon.players"));
     }
 
-    private static void displayMembersWithRole(Guild guild, Role role, long channelId, String formattedDisplay) {
+    private static void displayMembersWithRole(Guild guild, Role role, String channelId, String formattedDisplay) {
         VoiceChannel channel = guild.getVoiceChannelById(channelId);
         if (channel == null) return;
 

@@ -22,10 +22,6 @@ import java.util.*;
 public class Main extends ListenerAdapter {
     public static final File DIR_PROPS = new File("properties");
 
-    public static final long ROLE_PLAYER     = 747533854625235024L;
-    public static final long CHANNEL_PLAYERS = 765683007046287360L;
-    public static final long CHANNEL_STATUS  = 766376696974147665L;
-
     public static InteractAdapter[] commandAdapters = null;
     public static LPlayersMonitoring playersMonitoring;
     public static LServerState serverState;
