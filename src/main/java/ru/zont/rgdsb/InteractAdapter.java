@@ -6,22 +6,14 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Properties;
 
 import static ru.zont.rgdsb.Main.*;
 
 public abstract class InteractAdapter {
-    private static final String PROPS_COMMENT = "Properties of Right Games project's DS Bot Command";
-    private static final int CACHE_LIFETIME = 20000;
-
+    // TODO rework this
     private Properties propertiesCache = null;
     private long propertiesCacheTS = 0;
-
-    private static Properties gPropertiesCache = null;
-    private static long gPropertiesCacheTS = 0;
 
     public abstract String getCommandName();
 
@@ -49,82 +41,23 @@ public abstract class InteractAdapter {
 
     public Properties getProps() {
         long current = System.currentTimeMillis();
-        if (propertiesCache != null && current - propertiesCacheTS <= CACHE_LIFETIME)
+        if (propertiesCache != null && current - propertiesCacheTS <= PropertiesTools.CACHE_LIFETIME)
             return propertiesCache;
 
-        Properties props = getProps(getCommandName(), getPropsDefaults());
+        Properties props = PropertiesTools.getProps(getCommandName(), getPropsDefaults());
         propertiesCache = props;
         propertiesCacheTS = current;
         return props;
     }
 
     public void storeProps(Properties properties) {
-        storeProps(getCommandName(), properties);
+        PropertiesTools.storeProps(getCommandName(), properties);
         propertiesCache = properties;
         propertiesCacheTS = System.currentTimeMillis();
     }
 
-    public static void storeGlobalProps(Properties properties) {
-        storeProps("global", properties);
-        gPropertiesCache = properties;
-        gPropertiesCacheTS = System.currentTimeMillis();
-    }
-
-    public static Properties getGlobalProps() {
-        long current = System.currentTimeMillis();
-        if (gPropertiesCache != null && current - gPropertiesCacheTS <= CACHE_LIFETIME)
-            return gPropertiesCache;
-
-        Properties def = InteractAdapter.getGlobalPropsDefaults();
-        Properties res = getProps("global", def);
-        gPropertiesCache = res;
-        gPropertiesCacheTS = current;
-        return res;
-    }
-
-    private static Properties getGlobalPropsDefaults() {
-        return new Properties(){{
-            setProperty("ROLE_PLAYER", "0");
-            setProperty("ROLE_GM", "0");
-            setProperty("CHANNEL_PLAYERS", "0");
-            setProperty("CHANNEL_STATUS", "0");
-            setProperty("command_prefix", "//");
-        }};
-    }
-
-    private static Properties getProps(String name, Properties defaultProps) {
-        if (defaultProps == null) defaultProps = new Properties();
-
-        File propsFile = new File(PropertiesTools.DIR_PROPS, name + ".properties");
-        if (!propsFile.exists()) {
-            try (FileOutputStream os = new FileOutputStream(propsFile)) {
-                defaultProps.store(os, PROPS_COMMENT);
-            } catch (IOException e) {
-                throw new RuntimeException("Cannot store properties", e);
-            }
-            return defaultProps;
-        }
-
-        try (FileInputStream is = new FileInputStream(propsFile)) {
-            Properties result = new Properties(defaultProps);
-            result.load(is);
-            return result;
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot load properties", e);
-        }
-    }
-
-    private static void storeProps(String name, Properties properties) {
-        File propsFile = new File(PropertiesTools.DIR_PROPS, name + ".properties");
-        try (FileOutputStream os = new FileOutputStream(propsFile)) {
-            properties.store(os, PROPS_COMMENT);
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot store properties", e);
-        }
-    }
-
     public static String getPrefix() {
-        return getGlobalProps().getProperty("command_prefix");
+        return PropertiesTools.getGlobalProps().getProperty("command_prefix");
     }
 
     public static void onMessageReceived(@NotNull MessageReceivedEvent event, InteractAdapter[] adapters) {
@@ -182,12 +115,7 @@ public abstract class InteractAdapter {
     private void writeDefaultProps() {
         String name = getCommandName();
         if (!new File(PropertiesTools.DIR_PROPS, name + ".properties").exists())
-            storeProps(name, getPropsDefaults());
-    }
-
-    public static void writeDefaultGlobalProps() {
-        if (!new File(PropertiesTools.DIR_PROPS, "global.properties").exists())
-            storeGlobalProps(getGlobalPropsDefaults());
+            PropertiesTools.storeProps(name, getPropsDefaults());
     }
 
     protected static class RegisterException extends Exception {

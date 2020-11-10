@@ -19,6 +19,8 @@ import javax.security.auth.login.LoginException;
 import java.util.*;
 
 public class Main extends ListenerAdapter {
+    public static String dbConnection = "";
+
     public static InteractAdapter[] commandAdapters = null;
     public static LPlayersMonitoring playersMonitoring;
     public static LServerState serverState;
@@ -28,9 +30,11 @@ public class Main extends ListenerAdapter {
     public static void main(String[] args) throws LoginException, InterruptedException {
         commandAdapters = registerInteracts();
 
-        InteractAdapter.writeDefaultGlobalProps();
+        PropertiesTools.writeDefaultGlobalProps();
 
-        if (args.length == 0) throw new LoginException("API token not provided!");
+        if (args.length < 2) throw new LoginException("API token and/or DB connection not provided!");
+        dbConnection = args[1];
+
         JDABuilder.createLight(args[0], GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MEMBERS)
                 .addEventListeners(playersMonitoring = new LPlayersMonitoring(), serverState = new LServerState())
                 .addEventListeners(new Main())

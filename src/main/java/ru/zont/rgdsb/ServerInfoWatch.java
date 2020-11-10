@@ -22,9 +22,7 @@ public class ServerInfoWatch extends Thread {
 
     @Override
     public void run() {
-        String connectionUrl =
-                "jdbc:mariadb://185.189.255.57:3306/arma?user=rgbot&password=43092";
-        try (Connection connection = DriverManager.getConnection(connectionUrl);
+        try (Connection connection = DriverManager.getConnection(Main.dbConnection);
              Statement st = connection.createStatement()) {
             while (!interrupted()) {
                 ResultSet a = st.executeQuery(

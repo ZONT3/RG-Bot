@@ -6,10 +6,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.rgdsb.Commands;
-import ru.zont.rgdsb.InteractAdapter;
-import ru.zont.rgdsb.LOG;
-import ru.zont.rgdsb.Messages;
+import ru.zont.rgdsb.*;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -55,7 +52,7 @@ public class Config extends InteractAdapter {
 
             builder.addField(
                     STR.getString("comm.config.get.global"),
-                    parseProps(getGlobalProps()),
+                    parseProps(PropertiesTools.getGlobalProps()),
                     false );
 
             HashMap<String, InteractAdapter> comms = Commands.getAllCommands();
@@ -70,7 +67,7 @@ public class Config extends InteractAdapter {
                 throwUnknownComm(args[1]);
 
             String commandName = comm != null ? comm.getCommandName() : STR.getString("comm.config.get.global");
-            Properties props = comm != null ? comm.getProps() : getGlobalProps();
+            Properties props = comm != null ? comm.getProps() : PropertiesTools.getGlobalProps();
 
             EmbedBuilder builder = new EmbedBuilder();
             builder.setTitle(commandName);
@@ -82,7 +79,7 @@ public class Config extends InteractAdapter {
                 throwUnknownComm(args[1]);
 
             String commandName = comm != null ? comm.getCommandName() : STR.getString("comm.config.get.global");
-            Properties props = comm != null ? comm.getProps() : getGlobalProps();
+            Properties props = comm != null ? comm.getProps() : PropertiesTools.getGlobalProps();
 
             EmbedBuilder builder = new EmbedBuilder();
             builder.setTitle(commandName + "." + args[2]);
@@ -109,9 +106,9 @@ public class Config extends InteractAdapter {
         if (command.toLowerCase().equals("global")) {
             LOG.d("Modifying global config: k=%s v=%s", key, value);
 
-            Properties props = InteractAdapter.getGlobalProps();
+            Properties props = PropertiesTools.getGlobalProps();
             props.setProperty(key, value);
-            InteractAdapter.storeGlobalProps(props);
+            PropertiesTools.storeGlobalProps(props);
         } else {
             InteractAdapter comm = Commands.forName(command);
             if (comm == null)
