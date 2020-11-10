@@ -27,7 +27,14 @@ public class PropertiesTools {
         return res;
     }
 
-    static String getPlayerRoleID() {
+    public static String getRoleGmmID() {
+        String res = getGlobalProps().getProperty("ROLE_GMM");
+        if (res.equals("0"))
+            throw new IdNotProvidedException();
+        return res;
+    }
+
+    static String getRolePlayerID() {
         String res = getGlobalProps().getProperty("ROLE_PLAYER");
         if (res.equals("0"))
             throw new IdNotProvidedException();

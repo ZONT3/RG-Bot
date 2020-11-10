@@ -43,8 +43,8 @@ public class Status extends InteractAdapter {
             MessageEmbed e = Messages.status(struct, finalGmMention);
             EmbedBuilder builder = new EmbedBuilder(e)
                     .setTimestamp(Instant.now());
-            if (Main.serverState != null && Main.serverState.getServerStatusMessage() != null)
-                builder.setDescription(String.format("%s:\n%s", STR.getString("comm.status.link_live"), Main.serverState.getServerStatusMessage().getJumpUrl()));
+            if (Globals.serverState != null && Globals.serverState.getServerStatusMessage() != null)
+                builder.setDescription(String.format("%s:\n%s", STR.getString("comm.status.link_live"), Globals.serverState.getServerStatusMessage().getJumpUrl()));
             e = builder.build();
             event.getChannel().sendMessage(e).queue();
         });

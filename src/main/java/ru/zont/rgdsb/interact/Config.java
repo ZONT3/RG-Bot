@@ -25,11 +25,11 @@ public class Config extends InteractAdapter {
     public void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException {
         String[] args = Commands.parseArgs(this, event);
         if (args.length == 0)
-            throw new UserInvalidArgumentException(STR.getString("comm.config.err.incargs"));
+            throw new UserInvalidArgumentException(STR.getString("err.incargs"));
         switch (args[0].toLowerCase()) {
             case "set":
                 if (args.length < 4)
-                    throw new UserInvalidArgumentException(STR.getString("comm.config.err.incargs"));
+                    throw new UserInvalidArgumentException(STR.getString("err.incargs"));
                 if (args.length > 4)
                     for (int i = 4; i < args.length; i++)
                         args[3] += (" " + args[i]);

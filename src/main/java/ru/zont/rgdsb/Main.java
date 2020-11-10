@@ -16,27 +16,21 @@ import org.reflections.util.FilterBuilder;
 
 import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 public class Main extends ListenerAdapter {
-    public static String dbConnection = "";
-
-    public static InteractAdapter[] commandAdapters = null;
-    public static LPlayersMonitoring playersMonitoring;
-    public static LServerState serverState;
-
-    public static String ZONT_MENTION = "<@331524458806247426>";
 
     public static void main(String[] args) throws LoginException, InterruptedException {
-        commandAdapters = registerInteracts();
+        Globals.commandAdapters = registerInteracts();
 
         PropertiesTools.writeDefaultGlobalProps();
 
         if (args.length < 2) throw new LoginException("API token and/or DB connection not provided!");
-        dbConnection = args[1];
+        Globals.dbConnection = args[1];
 
         JDABuilder.createLight(args[0], GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MEMBERS)
-                .addEventListeners(playersMonitoring = new LPlayersMonitoring(), serverState = new LServerState())
+                .addEventListeners(Globals.playersMonitoring = new LPlayersMonitoring(), Globals.serverState = new LServerState())
                 .addEventListeners(new Main())
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .setChunkingFilter(ChunkingFilter.ALL)
@@ -46,7 +40,7 @@ public class Main extends ListenerAdapter {
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         try {
-            InteractAdapter.onMessageReceived(event, commandAdapters);
+            InteractAdapter.onMessageReceived(event, Globals.commandAdapters);
         } catch (Exception e) {
             e.printStackTrace();
             event.getChannel().sendMessage(
@@ -73,12 +67,13 @@ public class Main extends ListenerAdapter {
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .setScanners(new SubTypesScanner(false /* don't exclude Object.class */), new ResourcesScanner())
                 .setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0])))
-                .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix("ru.zont.rgdsb"))));
+                .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix("ru.zont.rgdsb.interact"))));
         Set<Class<? extends InteractAdapter>> allClasses =
                 reflections.getSubTypesOf(InteractAdapter.class);
 
         ArrayList<InteractAdapter> res = new ArrayList<>();
         for (Class<? extends InteractAdapter> klass: allClasses) {
+            if (Modifier.isAbstract(klass.getModifiers())) continue;
             try {
                 System.out.printf("Registering InteractAdapter class: %s\n", klass.getSimpleName());
                 InteractAdapter adapter = klass.newInstance();

@@ -13,7 +13,7 @@ public class Commands {
     }
 
     public static String parseInput(InteractAdapter adapter, MessageReceivedEvent event) {
-        String msg = event.getMessage().getContentStripped();
+        String msg = event.getMessage().getContentRaw();
         if (!msg.startsWith(InteractAdapter.getPrefix() + adapter.getCommandName()) && !msg.startsWith(adapter.getCommandName()))
             throw new IllegalStateException("Provided event does not contain a command request");
         if (msg.startsWith(InteractAdapter.getPrefix()))
@@ -24,7 +24,7 @@ public class Commands {
 
     public static HashMap<String, InteractAdapter> getAllCommands() {
         HashMap<String, InteractAdapter> res = new HashMap<>();
-        for (InteractAdapter a: Main.commandAdapters)
+        for (InteractAdapter a: Globals.commandAdapters)
             if (!a.getCommandName().isEmpty())
                 res.put(a.getCommandName(), a);
         return res;

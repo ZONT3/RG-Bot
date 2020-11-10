@@ -22,7 +22,7 @@ public class ServerInfoWatch extends Thread {
 
     @Override
     public void run() {
-        try (Connection connection = DriverManager.getConnection(Main.dbConnection);
+        try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
              Statement st = connection.createStatement()) {
             while (!interrupted()) {
                 ResultSet a = st.executeQuery(
@@ -77,7 +77,7 @@ public class ServerInfoWatch extends Thread {
     private void commitRecord(Statement st, short record) throws SQLException {
         st.executeUpdate(
                 "UPDATE server_info\n" +
-                "    SET s_players_record = "+ record + "\n" +
+                "    SET s_players_record="+ record + "\n" +
                 "    WHERE s_port = 2302\n" +
                 "    LIMIT 1");
     }

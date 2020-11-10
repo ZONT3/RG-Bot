@@ -8,8 +8,6 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Properties;
 
-import static ru.zont.rgdsb.Main.*;
-
 public abstract class InteractAdapter {
     // TODO rework this
     private Properties propertiesCache = null;
@@ -80,9 +78,9 @@ public abstract class InteractAdapter {
             break;
         }
 
-        LOG.d("Command received: '%s' from user %s", commandName, event.getAuthor().getAsTag());
+        LOG.d("Command received: '%s' from user %s", event.getMessage().getContentRaw(), event.getAuthor().getAsTag());
         if (adapter == null) {
-            Messages.printError(event.getChannel(), Strings.STR.getString("err.unknown_command.title"), String.format(Strings.STR.getString("err.unknown_command"), ZONT_MENTION));
+            Messages.printError(event.getChannel(), Strings.STR.getString("err.unknown_command.title"), String.format(Strings.STR.getString("err.unknown_command"), Globals.ZONT_MENTION));
             return;
         }
         if (event.isWebhookMessage()) {
