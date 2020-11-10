@@ -23,7 +23,7 @@ public abstract class InteractAdapter {
 
     public abstract String getDescription();
 
-    public boolean checkPermission(@Nullable Member member) { return true; }
+    public boolean checkPermission(MessageReceivedEvent event) { return true; }
 
     protected void onInsufficientPermissions(@NotNull MessageReceivedEvent event) {
         Messages.printError(event.getChannel(), Strings.STR.getString("err.insufficient_perm.title"), Strings.STR.getString("err.insufficient_perm"));
@@ -88,7 +88,7 @@ public abstract class InteractAdapter {
             return;
         }
 
-        boolean permission = adapter.checkPermission(event.getMember());
+        boolean permission = adapter.checkPermission(event);
         if (!permission && event.getMember() == null) {
             Messages.printError(event.getChannel(), Strings.STR.getString("err.unknown_perm.title"), Strings.STR.getString("err.unknown_perm"));
             return;

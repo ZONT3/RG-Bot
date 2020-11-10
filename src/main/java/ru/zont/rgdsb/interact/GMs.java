@@ -89,7 +89,11 @@ public class GMs extends LongInteractAdapter {
     }
 
     @Override
-    public boolean checkPermission(@Nullable Member member) {
+    public boolean checkPermission(MessageReceivedEvent event) {
+        String[] args = Commands.parseArgs(this, event);
+        if (args.length >= 2 && args[1].toLowerCase().equals("get"))
+            return true;
+        Member member = event.getMember();
         if (member == null) return false;
         if (member.hasPermission(Permission.ADMINISTRATOR)) return true;
         String gmmID = PropertiesTools.getRoleGmmID();

@@ -124,7 +124,8 @@ public class Config extends InteractAdapter {
     }
 
     @Override
-    public boolean checkPermission(@Nullable Member member) {
+    public boolean checkPermission(MessageReceivedEvent event) {
+        Member member = event.getMember();
         return member != null && member.hasPermission(Permission.ADMINISTRATOR);
     }
 
