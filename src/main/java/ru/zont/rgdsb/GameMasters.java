@@ -39,10 +39,10 @@ public class GameMasters {
             st.executeUpdate(
                     "INSERT INTO game_masters\n" +
                             "(name_dis, id_steam64, name_arma, id_discord)\n" +
-                            "VALUES('"+gm.dsname+"','"+gm.steamid64+"','"+gm.armaname+"',"+gm.userid+")\n" +
+                            "VALUES('"+gm.dsname+"','\""+gm.steamid64+"\"','"+gm.armaname+"',"+gm.userid+")\n" +
                         "ON DUPLICATE KEY UPDATE\n" +
                             "name_dis='"+gm.dsname+"',\n" +
-                            "id_steam64='"+gm.steamid64+"',\n" +
+                            "id_steam64='\""+gm.steamid64+"\"',\n" +
                             "name_arma='"+gm.armaname+"'\n"
             );
         } catch (SQLException e) {
