@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import static ru.zont.rgdsb.Strings.STR;
@@ -96,6 +97,25 @@ public class GameMasters {
         }
     }
 
+    private static Date getAssignedDate(long userid) {
+        try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
+             Statement st = connection.createStatement()) {
+            ResultSet resultSet = st.executeQuery(
+                    "SELECT st_assigned " +
+                            "FROM game_masters " +
+                            "WHERE id_discord=" + userid + " " +
+                            "LIMIT 1"
+            );
+            if (!resultSet.next())
+                return null;
+            Timestamp timestamp = resultSet.getTimestamp(1);
+            if (timestamp == null) return null;
+            return new Date(timestamp.toInstant().getEpochSecond() * 1000);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static MessageEmbed retrieveGmsEmbed(Guild guild) {
         ArrayList<GM> gms = retrieve();
         EmbedBuilder builder = new EmbedBuilder();
@@ -104,17 +124,29 @@ public class GameMasters {
             Member member = guild.getMemberById(gm.userid);
             String memberStr = member != null ? member.getAsMention() : STR.getString("comm.gms.get.unknown");
             Date lastLogin = getLastLogin(gm.steamid64);
+            Date dateAssigned = getAssignedDate(gm.userid);
+
+            String online, assigned;
+            boolean bold = false;
+
             if (lastLogin != null) {
                 long diff = (System.currentTimeMillis() - lastLogin.getTime()) / 1000 / 60 / 60;
-                builder.appendDescription(
-                        field(memberStr, String.format(STR.getString("comm.gms.get.lastlogin"), diff / 24, diff % 24), (diff / 24) > 0) );
-            } else builder.appendDescription(field(memberStr, STR.getString("comm.gms.get.lastlogin.unk"), false));
+                bold = (diff / 24) > 0;
+                online = String.format(STR.getString("comm.gms.get.lastlogin"), diff / 24, diff % 24);
+            } else online = STR.getString("comm.gms.get.lastlogin.unk");
+
+            assigned = String.format(STR.getString("comm.gms.get.assigned"), (
+                    dateAssigned != null
+                    ? new SimpleDateFormat("dd.MM.yyyy HH:mm").format(dateAssigned)
+                    : STR.getString("comm.gms.get.assigned.l") ));
+
+            builder.appendDescription(field(memberStr, assigned, online, bold));
         }
         return builder.setColor(0x9900ff).build();
     }
 
-    private static String field(String memberStr, String string, boolean bold) {
-        return String.format(bold ? "%s\n**%s**\n\n" : "%s\n%s\n\n", memberStr, string);
+    private static String field(String memberStr, String assigned, String string, boolean bold) {
+        return String.format(bold ? "%s\n%s\n**%s**\n\n" : "%s\n%s\n%s\n\n", memberStr, assigned, string);
     }
 
     public static class GM {
