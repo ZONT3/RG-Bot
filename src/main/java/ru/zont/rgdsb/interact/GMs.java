@@ -7,11 +7,8 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.rgdsb.Commands;
+import ru.zont.rgdsb.*;
 import ru.zont.rgdsb.Commands.Input;
-import ru.zont.rgdsb.GameMasters;
-import ru.zont.rgdsb.LongInteractAdapter;
-import ru.zont.rgdsb.PropertiesTools;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -44,12 +41,12 @@ public class GMs extends LongInteractAdapter {
             case "list":
             case "get":
                 event.getChannel().sendMessage(
-                        GameMasters.retrieveGmsEmbed(
+                        Messages.addTimestamp(Messages.gmList(
                                 GameMasters.retrieve(),
                                 event.getGuild(),
                                 input.hasOpt("l"),
                                 input.hasOpt("s")
-                        )).queue();
+                        ))).queue();
                 break;
             default: throw new UserInvalidArgumentException(STR.getString("comm.gms.err.firstarg"));
         }
@@ -71,7 +68,7 @@ public class GMs extends LongInteractAdapter {
         GameMasters.GM gm = new GameMasters.GM();
         gm.steamid64 = steamid64;
         gm.userid = id;
-        gm.armaname = GameMasters.getArmaName(steamid64);
+        gm.armaname = Messages.getArmaName(steamid64);
         gm.dsname = member != null ? member.getEffectiveName() : "<null>";
         GameMasters.setGm(gm);
     }

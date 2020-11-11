@@ -1,11 +1,16 @@
 package ru.zont.rgdsb;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import ru.zont.rgdsb.listeners.StatusMain;
 
 import java.awt.*;
+import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -116,5 +121,123 @@ public class Messages {
         return nick.replaceAll("[\"']", "").trim()
                 .replaceAll("\\[.+] *", "")
                 .replaceAll("[ .]+.\\...?", "");
+    }
+
+    public static MessageEmbed addTimestamp(MessageEmbed e) {
+        return addTimestamp(new EmbedBuilder(e));
+    }
+
+    public static MessageEmbed addTimestamp(EmbedBuilder builder) {
+        return builder.setTimestamp(Instant.now()).build();
+    }
+
+    public static String getArmaName(String steamid64) {
+        try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
+             Statement st = connection.createStatement()) {
+            ResultSet resultSet = st.executeQuery(
+                    "SELECT p_name " +
+                        "FROM profiles_presistent " +
+                        "WHERE p_guid='\""+steamid64+"\"' " +
+                        "LIMIT 1"
+            );
+            if (!resultSet.next())
+                return "<null>";
+            return resultSet.getString(1);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Date getLastLogin(String steamid) {
+        try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
+             Statement st = connection.createStatement()) {
+            ResultSet resultSet = st.executeQuery(
+                    "SELECT p_lastupd " +
+                        "FROM profiles_presistent " +
+                        "WHERE p_guid='\"" + steamid + "\"' " +
+                        "LIMIT 1"
+            );
+            if (!resultSet.next())
+                return null;
+            Timestamp timestamp = resultSet.getTimestamp(1);
+            if (timestamp == null) return null;
+            return new Date(timestamp.toInstant().getEpochSecond() * 1000);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Date getAssignedDate(long userid) {
+        try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
+             Statement st = connection.createStatement()) {
+            ResultSet resultSet = st.executeQuery(
+                    "SELECT st_assigned " +
+                            "FROM game_masters " +
+                            "WHERE id_discord=" + userid + " " +
+                            "LIMIT 1"
+            );
+            if (!resultSet.next())
+                return null;
+            Timestamp timestamp = resultSet.getTimestamp(1);
+            if (timestamp == null) return null;
+            return new Date(timestamp.toInstant().getEpochSecond() * 1000);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static MessageEmbed gmList(List<GameMasters.GM> gms, Guild guild) {
+        return gmList(gms, guild, false, false);
+    }
+
+    public static MessageEmbed gmList(List<GameMasters.GM> gms, Guild guild, boolean less, boolean steamid) {
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setTitle(STR.getString("comm.gms.get.title"));
+        for (GameMasters.GM gm: gms) {
+            Member member = guild.getMemberById(gm.userid);
+            String memberStr = member != null ? member.getAsMention() : STR.getString("comm.gms.get.unknown");
+            Date lastLogin = getLastLogin(gm.steamid64);
+            Date dateAssigned = getAssignedDate(gm.userid);
+
+            String online, assigned;
+            boolean bold = false;
+
+            if (lastLogin != null) {
+                long diff = (System.currentTimeMillis() - lastLogin.getTime()) / 1000 / 60;
+                if (diff > 1) {
+                    bold = (diff / 60 / 24) > 0;
+                    String was = String.format(STR.getString("comm.gms.get.lastlogin.d"), diff / 60 / 24, diff / 60 % 24);
+                    if (diff < 60) was = STR.getString("comm.gms.get.lastlogin.j");
+                    online = String.format(STR.getString("comm.gms.get.lastlogin"), was);
+                } else online = STR.getString("comm.gms.get.lastlogin.n");
+            } else online = STR.getString("comm.gms.get.lastlogin.unk");
+
+            assigned = String.format(STR.getString("comm.gms.get.assigned"), (
+                    dateAssigned != null
+                    ? new SimpleDateFormat("dd.MM.yyyy HH:mm").format(dateAssigned)
+                    : STR.getString("comm.gms.get.assigned.l") ));
+
+            String armaName = String.format(STR.getString("comm.gms.get.armaname"), getArmaName(gm.steamid64));
+            String steamidStr = String.format("SteamID64: `%s`", gm.steamid64);
+            builder.appendDescription(field(memberStr, armaName, assigned, online, steamidStr, bold, less, steamid));
+        }
+        return builder.setColor(0x9900ff).build();
+    }
+
+    private static String field(String memberStr, String armaName, String assigned, String online, String steamidStr, boolean bold, boolean less, boolean steamid) {
+        StringBuilder builder = new StringBuilder(memberStr);
+        if (steamid)
+            builder.append('\n').append(steamidStr);
+        if (!less) {
+            builder.append('\n')
+                    .append(armaName)
+                    .append('\n')
+                    .append(assigned)
+                    .append('\n')
+                    .append(online)
+                    .append(bold ? " :anger:" : "")
+                    .append('\n');
+        }
+        return builder.append('\n').toString();
     }
 }
