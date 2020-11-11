@@ -29,7 +29,7 @@ public class Help extends InteractAdapter {
 
     @Override
     public void onRequest(@NotNull MessageReceivedEvent event) {
-        String inpt = Commands.parseInput(this, event);
+        String inpt = Commands.parseInputRaw(this, event);
         InteractAdapter comm = null;
         boolean b = !inpt.isEmpty();
         if (b) comm = Commands.forName(inpt);

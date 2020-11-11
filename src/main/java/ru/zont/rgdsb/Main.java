@@ -33,8 +33,11 @@ public class Main extends ListenerAdapter {
         Globals.dbConnection = args[1];
 
         JDABuilder.createLight(args[0], GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MEMBERS)
-                .addEventListeners(Globals.playersMonitoring = new LPlayersMonitoring(), Globals.serverStatus = new LServerStatus())
-                .addEventListeners(new Main())
+                .addEventListeners(
+                        new Main(),
+                        Globals.playersMonitoring = new LPlayersMonitoring(),
+                        Globals.serverStatus = new LServerStatus()
+                )
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .build().awaitReady();

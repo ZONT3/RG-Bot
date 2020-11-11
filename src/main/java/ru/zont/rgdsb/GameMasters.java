@@ -118,6 +118,10 @@ public class GameMasters {
     }
 
     public static MessageEmbed retrieveGmsEmbed(List<GM> gms, Guild guild) {
+        return retrieveGmsEmbed(gms, guild, false, false);
+    }
+
+    public static MessageEmbed retrieveGmsEmbed(List<GM> gms, Guild guild, boolean less, boolean steamid) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle(STR.getString("comm.gms.get.title"));
         for (GM gm: gms) {
@@ -145,13 +149,27 @@ public class GameMasters {
                     : STR.getString("comm.gms.get.assigned.l") ));
 
             String armaName = String.format(STR.getString("comm.gms.get.armaname"), getArmaName(gm.steamid64));
-            builder.appendDescription(field(memberStr, armaName, assigned, online, bold));
+            String steamidStr = String.format("SteamID64: `%s`", gm.steamid64);
+            builder.appendDescription(field(memberStr, armaName, assigned, online, steamidStr, bold, less, steamid));
         }
         return builder.setColor(0x9900ff).build();
     }
 
-    private static String field(String memberStr, String armaName, String assigned, String string, boolean bold) {
-        return String.format(bold ? "%s\n%s\n%s\n**%s**\n\n" : "%s\n%s\n%s\n%s\n\n", memberStr, armaName, assigned, string);
+    private static String field(String memberStr, String armaName, String assigned, String online, String steamidStr, boolean bold, boolean less, boolean steamid) {
+        StringBuilder builder = new StringBuilder(memberStr);
+        if (steamid)
+            builder.append('\n').append(steamidStr);
+        if (!less) {
+            builder.append('\n')
+                    .append(armaName)
+                    .append('\n')
+                    .append(assigned)
+                    .append('\n')
+                    .append(online)
+                    .append(bold ? " :anger:" : "")
+                    .append('\n');
+        }
+        return builder.append('\n').toString();
     }
 
     public static class GM {

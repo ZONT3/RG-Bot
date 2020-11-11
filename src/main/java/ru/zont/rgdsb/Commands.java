@@ -3,17 +3,20 @@ package ru.zont.rgdsb;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import ru.zont.rgdsb.interact.InteractAdapter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Commands {
+
+
     public static String[] parseArgs(InteractAdapter adapter, MessageReceivedEvent event) {
-        String msg = parseInput(adapter, event);
+        String msg = parseInputRaw(adapter, event);
         if (msg.isEmpty()) return new String[0];
         return ArgumentTokenizer.tokenize(msg).toArray(new String[0]);
     }
 
-    public static String parseInput(InteractAdapter adapter, MessageReceivedEvent event) {
+    public static String parseInputRaw(InteractAdapter adapter, MessageReceivedEvent event) {
         String msg = event.getMessage().getContentRaw();
         if (!msg.startsWith(InteractAdapter.getPrefix() + adapter.getCommandName()) && !msg.startsWith(adapter.getCommandName()))
             throw new IllegalStateException("Provided event does not contain a command request");
@@ -21,6 +24,10 @@ public class Commands {
             msg = msg.replaceFirst(InteractAdapter.getPrefix() + adapter.getCommandName(), "");
         else msg = msg.replaceFirst(adapter.getCommandName(), "");
         return msg.trim();
+    }
+
+    public static Input parseInput(InteractAdapter adapter, MessageReceivedEvent event) {
+        return new Input(parseArgs(adapter, event));
     }
 
     public static HashMap<String, InteractAdapter> getAllCommands() {
@@ -38,5 +45,37 @@ public class Commands {
             if (command.toLowerCase().equals(entry.getKey().toLowerCase()))
                 comm = entry.getValue();
         return comm;
+    }
+
+    public static class Input {
+        private final ArrayList<String> args;
+        private final ArrayList<String> options;
+        private Input(String[] inpt) {
+            args = new ArrayList<>();
+            options = new ArrayList<>();
+            for (String s: inpt) {
+                if (s.startsWith("--"))
+                    options.add(s.toLowerCase());
+                else if (s.startsWith("-"))
+                    parseOpts(s);
+                else args.add(s);
+            }
+        }
+
+        private void parseOpts(String s) {
+            for (char c: s.substring(1).toCharArray()) options.add(c + "");
+        }
+
+        public boolean hasOpt(String o) {
+            return options.contains(o);
+        }
+
+        public ArrayList<String> getArgs() {
+            return args;
+        }
+
+        public ArrayList<String> getOptions() {
+            return options;
+        }
     }
 }

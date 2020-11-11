@@ -2,6 +2,7 @@ package ru.zont.rgdsb.listeners;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
@@ -15,10 +16,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ru.zont.rgdsb.Strings.STR;
+
 public class LServerStatus extends ListenerAdapter {
     private List<ServerStatusEntry> entryList;
     private List<Thread> threadList;
     private Map<Class<? extends ServerStatusEntry>, Message> messages;
+
+    private static final HashMap<String, Class<? extends ServerStatusEntry>> titles = new HashMap<String, Class<? extends ServerStatusEntry>>() {{
+        put(STR.getString("status.main.title"), StatusMain.class);
+        put(STR.getString("status.statistics.title"), StatusStatistics.class);
+        put(STR.getString("comm.gms.get.title"), StatusGMs.class);
+    }};
 
     private ArrayList<ServerStatusEntry> buildEntryList() {
         return new ArrayList<ServerStatusEntry>() {{
@@ -43,25 +52,49 @@ public class LServerStatus extends ListenerAdapter {
         if (channel == null)
             throw new RuntimeException("Cannot find server state channel with id " + channelStatusID);
 
+        entryList = buildEntryList();
+        threadList = new ArrayList<>();
+        messages = new HashMap<>();
+
         prepare(channel);
         setup(channel);
     }
 
     private void prepare(TextChannel channel) {
-        for (Message message: channel.getHistory().retrievePast(50).complete())
-            message.delete().queue();
+        boolean allPresent = true;
+        List<Message> history = channel.getHistory().retrievePast(50).complete();
+        for (Message message: history) {
+            Class<? extends ServerStatusEntry> klass = null;
+            List<MessageEmbed> embeds = message.getEmbeds();
+            if (embeds.size() == 1) {
+                String title = embeds.get(0).getTitle();
+                if (titles.containsKey(title)) {
+                    klass = titles.get(title);
+                    messages.put(klass, message);
+                }
+            }
+
+            if (klass == null) {
+                allPresent = false;
+                break;
+            }
+        }
+        // Если хоть одно сообщение отсутствует - удаляем все, что бы не нарушать их порядок.
+        if (!allPresent) {
+            for (Message message: history) message.delete().queue();
+            messages.clear();
+        }
     }
 
     private void setup(TextChannel channel) {
-        entryList = buildEntryList();
-        threadList = new ArrayList<>();
-        messages = new HashMap<>();
-
         for (ServerStatusEntry entry: entryList) {
-            Message message = channel.sendMessage(entry.getInitialMsg()).complete();
-            messages.put(entry.getClass(), message);
+            Message message;
+            if (!messages.containsKey(entry.getClass())) {
+                message = channel.sendMessage(entry.getInitialMsg()).complete();
+                messages.put(entry.getClass(), message);
+            } else message = messages.get(entry.getClass());
 
-            Thread thread = new Thread(() -> {
+            Thread thread = new Thread(null, () -> {
                 while (!Thread.interrupted()) {
                     entry.update(message);
                     try {
@@ -70,7 +103,7 @@ public class LServerStatus extends ListenerAdapter {
                         break;
                     }
                 }
-            });
+            }, String.format("%s ServerStatus Worker", entry.getClass().getSimpleName()));
             thread.start();
             threadList.add(thread);
         }

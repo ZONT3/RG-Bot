@@ -8,11 +8,13 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import ru.zont.rgdsb.Commands;
+import ru.zont.rgdsb.Commands.Input;
 import ru.zont.rgdsb.GameMasters;
 import ru.zont.rgdsb.LongInteractAdapter;
 import ru.zont.rgdsb.PropertiesTools;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import static ru.zont.rgdsb.Strings.STR;
@@ -24,25 +26,32 @@ public class GMs extends LongInteractAdapter {
 
     @Override
     public void onRequestLong(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException {
-        String[] args = Commands.parseArgs(this, event);
-        if (args.length < 1)
+        Input input = Commands.parseInput(this, event);
+        ArrayList<String> args = input.getArgs();
+        if (args.size() < 1)
             throw new UserInvalidArgumentException(STR.getString("err.incargs"));
-        switch (args[0].toLowerCase()) {
+        switch (args.get(0).toLowerCase()) {
             case "set":
                 checkArgs(args, 3);
-                set(event.getGuild(), getId(args[1]), args[2]);
+                set(event.getGuild(), getId(args.get(1)), args.get(2));
                 ok(event);
                 break;
             case "rm":
                 checkArgs(args, 2);
-                GameMasters.removeGm(getId(args[1]));
+                GameMasters.removeGm(getId(args.get(1)));
                 ok(event);
                 break;
             case "list":
             case "get":
-                event.getChannel().sendMessage(GameMasters.retrieveGmsEmbed(GameMasters.retrieve(), event.getGuild())).queue();
+                event.getChannel().sendMessage(
+                        GameMasters.retrieveGmsEmbed(
+                                GameMasters.retrieve(),
+                                event.getGuild(),
+                                input.hasOpt("l"),
+                                input.hasOpt("s")
+                        )).queue();
                 break;
-            default: throw new UserInvalidArgumentException(STR.getString("comm.gms.err.firsarg"));
+            default: throw new UserInvalidArgumentException(STR.getString("comm.gms.err.firstarg"));
         }
     }
 
@@ -67,10 +76,10 @@ public class GMs extends LongInteractAdapter {
         GameMasters.setGm(gm);
     }
 
-    private static void checkArgs(String[] args, int needed) {
-        if (args.length < needed)
+    private static void checkArgs(ArrayList<String> args, int needed) {
+        if (args.size() < needed)
             throw new UserInvalidArgumentException(STR.getString("err.incargs"));
-        if (!args[1].matches("<@!?\\d+>"))
+        if (!args.get(1).matches("<@!?\\d+>"))
             throw new UserInvalidArgumentException(STR.getString("comm.gms.err.secarg"));
     }
 
@@ -86,7 +95,7 @@ public class GMs extends LongInteractAdapter {
 
     @Override
     public String getExample() {
-        return "gm (set|get|rm) [@user steamid64]";
+        return "gm [-ls] (set|get|rm) [@user steamid64]";
     }
 
     @Override
