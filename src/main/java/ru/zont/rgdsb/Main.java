@@ -13,6 +13,7 @@ import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
+import ru.zont.rgdsb.interact.InteractAdapter;
 import ru.zont.rgdsb.listeners.LPlayersMonitoring;
 import ru.zont.rgdsb.listeners.LServerStatus;
 

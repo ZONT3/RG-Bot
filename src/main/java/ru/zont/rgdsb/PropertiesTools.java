@@ -9,7 +9,7 @@ import java.util.Properties;
 public class PropertiesTools {
     public static final File DIR_PROPS = new File("properties");
     private static final String PROPS_COMMENT = "Properties of Right Games project's DS Bot Command";
-    static final int CACHE_LIFETIME = 20000;
+    public static final int CACHE_LIFETIME = 20000;
     private static Properties gPropertiesCache = null;
     private static long gPropertiesCacheTS = 0;
 
@@ -99,7 +99,7 @@ public class PropertiesTools {
         }
     }
 
-    static void storeProps(String name, Properties properties) {
+    public static void storeProps(String name, Properties properties) {
         File propsFile = new File(DIR_PROPS, name + ".properties");
         try (FileOutputStream os = new FileOutputStream(propsFile)) {
             properties.store(os, PROPS_COMMENT);

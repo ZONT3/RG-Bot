@@ -1,6 +1,7 @@
 package ru.zont.rgdsb;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import ru.zont.rgdsb.interact.InteractAdapter;
 
 import java.util.HashMap;
 import java.util.Map;

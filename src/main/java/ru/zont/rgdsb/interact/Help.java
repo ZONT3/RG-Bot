@@ -4,7 +4,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import ru.zont.rgdsb.Commands;
-import ru.zont.rgdsb.InteractAdapter;
 import ru.zont.rgdsb.Messages;
 
 import java.awt.*;

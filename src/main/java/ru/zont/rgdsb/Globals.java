@@ -1,5 +1,6 @@
 package ru.zont.rgdsb;
 
+import ru.zont.rgdsb.interact.InteractAdapter;
 import ru.zont.rgdsb.listeners.LPlayersMonitoring;
 import ru.zont.rgdsb.listeners.LServerStatus;
 

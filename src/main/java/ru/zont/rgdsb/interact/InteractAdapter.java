@@ -1,10 +1,9 @@
-package ru.zont.rgdsb;
+package ru.zont.rgdsb.interact;
 
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
+import ru.zont.rgdsb.*;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Properties;
 

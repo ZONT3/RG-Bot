@@ -2,6 +2,7 @@ package ru.zont.rgdsb;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
+import ru.zont.rgdsb.interact.InteractAdapter;
 
 public abstract class LongInteractAdapter extends InteractAdapter {
     public LongInteractAdapter() throws RegisterException {
