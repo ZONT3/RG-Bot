@@ -48,7 +48,10 @@ public class GMs extends LongInteractAdapter {
     }
 
     private long getId(String raw) {
-        return Long.parseLong(raw.substring(3, raw.length() - 1));
+        int st = 3;
+        if (raw.matches("<@\\d+>"))
+            st = 2;
+        return Long.parseLong(raw.substring(st, raw.length() - 1));
     }
 
     private void set(Guild guild, long id, String steamid64) {
@@ -64,7 +67,7 @@ public class GMs extends LongInteractAdapter {
     private static void checkArgs(String[] args, int needed) {
         if (args.length < needed)
             throw new UserInvalidArgumentException(STR.getString("err.incargs"));
-        if (!args[1].matches("<@!\\d+>"))
+        if (!args[1].matches("<@!?\\d+>"))
             throw new UserInvalidArgumentException(STR.getString("comm.gms.err.secarg"));
     }
 

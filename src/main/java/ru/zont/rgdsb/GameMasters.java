@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import static ru.zont.rgdsb.Strings.STR;
 
@@ -21,6 +22,7 @@ public class GameMasters {
             while (resultSet.next()) {
                 GM gm = new GM();
                 gm.steamid64 = resultSet.getString("id_steam64");
+                gm.steamid64 = gm.steamid64.substring(1, gm.steamid64.length() - 1);
                 gm.userid = resultSet.getLong("id_discord");
                 gm.dsname = resultSet.getString("name_dis");
                 gm.armaname = resultSet.getString("name_arma");
@@ -76,6 +78,25 @@ public class GameMasters {
         }
     }
 
+    private static Date getLastLogin(String steamid) {
+        try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
+             Statement st = connection.createStatement()) {
+            ResultSet resultSet = st.executeQuery(
+                    "SELECT p_lastupd " +
+                        "FROM profiles_presistent " +
+                        "WHERE p_guid='\"" + steamid + "\"' " +
+                        "LIMIT 1"
+            );
+            if (!resultSet.next())
+                return null;
+            Timestamp timestamp = resultSet.getTimestamp(1);
+            if (timestamp == null) return null;
+            return new Date(timestamp.toInstant().getEpochSecond() * 1000);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static MessageEmbed retrieveGmsEmbed(Guild guild) {
         ArrayList<GM> gms = retrieve();
         EmbedBuilder builder = new EmbedBuilder();
@@ -83,9 +104,18 @@ public class GameMasters {
         for (GM gm: gms) {
             Member member = guild.getMemberById(gm.userid);
             String memberStr = member != null ? member.getAsMention() : STR.getString("comm.gms.get.unknown");
-            builder.appendDescription(memberStr + "\n");
+            Date lastLogin = getLastLogin(gm.steamid64);
+            if (lastLogin != null) {
+                long diff = (System.currentTimeMillis() - lastLogin.getTime()) / 1000 / 60 / 60;
+                builder.appendDescription(
+                        field(memberStr, String.format(STR.getString("comm.gms.get.lastlogin"), diff / 24, diff % 24), (diff / 24) > 0) );
+            } else builder.appendDescription(field(memberStr, STR.getString("comm.gms.get.lastlogin.unk"), false));
         }
         return builder.setColor(0x9900ff).build();
+    }
+
+    private static String field(String memberStr, String string, boolean bold) {
+        return String.format(bold ? "%s\n**%s**\n" : "%s\n%s\n", memberStr, string);
     }
 
     public static class GM {
