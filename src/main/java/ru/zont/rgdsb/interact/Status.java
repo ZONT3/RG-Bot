@@ -1,11 +1,13 @@
 package ru.zont.rgdsb.interact;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import ru.zont.rgdsb.*;
+import ru.zont.rgdsb.listeners.StatusMain;
 
 import java.time.Instant;
 import java.util.Properties;
@@ -38,17 +40,17 @@ public class Status extends InteractAdapter {
             gmMention = gm.getAsMention();
         final String finalGmMention = gmMention;
 
-        ServerInfoWatch watch = new ServerInfoWatch();
-        watch.setCallback(struct -> {
-            MessageEmbed e = Messages.status(struct, finalGmMention);
-            EmbedBuilder builder = new EmbedBuilder(e)
-                    .setTimestamp(Instant.now());
-            if (Globals.serverState != null && Globals.serverState.getServerStatusMessage() != null)
-                builder.setDescription(String.format("%s:\n%s", STR.getString("comm.status.link_live"), Globals.serverState.getServerStatusMessage().getJumpUrl()));
-            e = builder.build();
-            event.getChannel().sendMessage(e).queue();
-        });
-        watch.start();
+        StatusMain.ServerInfoStruct struct = StatusMain.retrieveServerInfo();
+        MessageEmbed e = Messages.status(struct, finalGmMention);
+        EmbedBuilder builder = new EmbedBuilder(e)
+                .setTimestamp(Instant.now());
+        if (Globals.serverStatus != null) {
+            Message message = Globals.serverStatus.getMessage(StatusMain.class);
+            if (message != null)
+                builder.setDescription(String.format("%s:\n%s", STR.getString("comm.status.link_live"), message.getJumpUrl()));
+        }
+        e = builder.build();
+        event.getChannel().sendMessage(e).queue();
     }
 
     @Override

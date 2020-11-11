@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import java.sql.*;
 import java.util.List;
 
+@Deprecated
 public class ServerInfoWatch extends Thread {
     private Callback callback;
     private final long period;
@@ -102,12 +103,12 @@ public class ServerInfoWatch extends Thread {
     }
 
     public static class ServerInfoStruct {
-        short count;
-        long time;
-        long uptime;
-        List<String> gms;
-        short record;
-        int total;
+        public short count;
+        public long time;
+        public long uptime;
+        public List<String> gms;
+        public short record;
+        public int total;
 
         public ServerInfoStruct(short count, long time, long uptime, List<String> gms, short record, int total) {
             this.count = count;

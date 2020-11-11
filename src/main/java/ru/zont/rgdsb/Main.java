@@ -13,6 +13,8 @@ import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
+import ru.zont.rgdsb.listeners.LPlayersMonitoring;
+import ru.zont.rgdsb.listeners.LServerStatus;
 
 import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
@@ -30,7 +32,7 @@ public class Main extends ListenerAdapter {
         Globals.dbConnection = args[1];
 
         JDABuilder.createLight(args[0], GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MEMBERS)
-                .addEventListeners(Globals.playersMonitoring = new LPlayersMonitoring(), Globals.serverState = new LServerState())
+                .addEventListeners(Globals.playersMonitoring = new LPlayersMonitoring(), Globals.serverStatus = new LServerStatus())
                 .addEventListeners(new Main())
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .setChunkingFilter(ChunkingFilter.ALL)

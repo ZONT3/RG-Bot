@@ -3,6 +3,7 @@ package ru.zont.rgdsb;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import ru.zont.rgdsb.listeners.StatusMain;
 
 import java.awt.*;
 import java.time.LocalTime;
@@ -23,7 +24,7 @@ public class Messages {
         channel.sendMessage(error(title, description)).queue();
     }
 
-    public static MessageEmbed status(ServerInfoWatch.ServerInfoStruct serverInfo, String gmMention) {
+    public static MessageEmbed status(StatusMain.ServerInfoStruct serverInfo, String gmMention) {
         long time = serverInfo.time;
         short online = serverInfo.count;
         short playersRecord = serverInfo.record;

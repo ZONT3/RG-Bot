@@ -1,4 +1,4 @@
-package ru.zont.rgdsb;
+package ru.zont.rgdsb.listeners;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
@@ -7,6 +7,9 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import ru.zont.rgdsb.LOG;
+import ru.zont.rgdsb.PropertiesTools;
+import ru.zont.rgdsb.Strings;
 
 import javax.annotation.Nonnull;
 

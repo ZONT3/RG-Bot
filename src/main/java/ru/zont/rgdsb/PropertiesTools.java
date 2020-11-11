@@ -34,14 +34,14 @@ public class PropertiesTools {
         return res;
     }
 
-    static String getRolePlayerID() {
+    public static String getRolePlayerID() {
         String res = getGlobalProps().getProperty("ROLE_PLAYER");
         if (res.equals("0"))
             throw new IdNotProvidedException();
         return res;
     }
 
-    static String getChannelPlayersID() {
+    public static String getChannelPlayersID() {
         String res = getGlobalProps().getProperty("CHANNEL_PLAYERS");
         if (res.equals("0"))
             throw new IdNotProvidedException();
