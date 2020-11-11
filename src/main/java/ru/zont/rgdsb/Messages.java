@@ -35,10 +35,10 @@ public class Messages {
         if (time >= 45000) return serverInactive();
 
         EmbedBuilder builder = new EmbedBuilder()
-                .setTitle(STR.getString("servstate.title"))
-                .addField(STR.getString("servstate.online"), Strings.countPlayers(online), true)
+                .setTitle(STR.getString("status.main.title"))
+                .addField(STR.getString("status.main.online"), Strings.countPlayers(online), true)
                 .addField(
-                        STR.getString("servstate.restart"),
+                        STR.getString("status.main.restart"),
                         String.format( STR.getString("time.hm"),
                                 restart / 60 / 60,
                                 restart / 60 % 60 ),
@@ -59,7 +59,7 @@ public class Messages {
             sb.append(String.format(":zap: %26s\n", sb1.toString()));
         if (sb.length() == 0)
             sb.append(noGmString(gmMention));
-        builder.addField(STR.getString("servstate.gms"), sb.toString(), false);
+        builder.addField(STR.getString("status.main.gms"), sb.toString(), false);
 
         if (playersRecord >= 0) {
             int g = 255 * online / playersRecord;
@@ -74,34 +74,41 @@ public class Messages {
     private static String noGmString(String gm) {
         int h = LocalTime.now().getHour();
         if (h >= 15 && h <= 22) {
-            return String.format(STR.getString("servstate.gms.absent.day"), gm);
+            return String.format(STR.getString("status.main.gms.absent.day"), gm);
         } else {
-            return STR.getString("servstate.gms.absent.night");
+            return STR.getString("status.main.gms.absent.night");
         }
     }
 
     public static MessageEmbed serverInactive() {
         return new EmbedBuilder()
-                .setTitle(STR.getString("servstate.title"))
-                .setDescription(STR.getString("servstate.inactive"))
+                .setTitle(STR.getString("status.main.title"))
+                .setDescription(STR.getString("status.main.inactive"))
                 .build();
     }
 
-    public static MessageEmbed serverStatisticBasic() {
+    public static MessageEmbed serverStatisticInitial() {
         return new EmbedBuilder()
-                .setTitle(STR.getString("servstats.title"))
-                .setDescription(STR.getString("servstats.connect"))
+                .setTitle(STR.getString("status.statistics.title"))
+                .setDescription(STR.getString("status.statistics.connect"))
                 .build();
     }
 
     public static MessageEmbed serverStatistic(short playersRecord, int playersTotal) {
-        if (playersRecord <= 0) return serverStatisticBasic();
-        if (playersTotal <= 0) return serverStatisticBasic();
+        if (playersRecord <= 0) return serverStatisticInitial();
+        if (playersTotal <= 0) return serverStatisticInitial();
         return new EmbedBuilder()
                 .setColor(Color.lightGray)
-                .setTitle(STR.getString("servstats.title"))
-                .addField(STR.getString("servstats.record"), Strings.countPlayers(playersRecord), false)
-                .addField(STR.getString("servstats.total"), Strings.countPlayers(playersTotal), false)
+                .setTitle(STR.getString("status.statistics.title"))
+                .addField(STR.getString("status.statistics.record"), Strings.countPlayers(playersRecord), false)
+                .addField(STR.getString("status.statistics.total"), Strings.countPlayers(playersTotal), false)
+                .build();
+    }
+    
+    public static MessageEmbed statusGMsInitial() {
+        return new EmbedBuilder()
+                .setTitle(STR.getString("comm.gms.get.title"))
+                .setDescription(STR.getString("status.gms.retrieving"))
                 .build();
     }
 

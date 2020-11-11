@@ -22,6 +22,7 @@ public class LServerStatus extends ListenerAdapter {
 
     private ArrayList<ServerStatusEntry> buildEntryList() {
         return new ArrayList<ServerStatusEntry>() {{
+            add(new StatusGMs());
             add(new StatusStatistics());
             add(new StatusMain());
         }};

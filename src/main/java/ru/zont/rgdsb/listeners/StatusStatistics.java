@@ -11,7 +11,7 @@ import java.sql.*;
 public class StatusStatistics extends ServerStatusEntry {
     @Override
     MessageEmbed getInitialMsg() {
-        return Messages.serverStatisticBasic();
+        return Messages.serverStatisticInitial();
     }
 
     @Override
