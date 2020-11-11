@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import static ru.zont.rgdsb.Strings.STR;
 
@@ -116,8 +117,7 @@ public class GameMasters {
         }
     }
 
-    public static MessageEmbed retrieveGmsEmbed(Guild guild) {
-        ArrayList<GM> gms = retrieve();
+    public static MessageEmbed retrieveGmsEmbed(List<GM> gms, Guild guild) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle(STR.getString("comm.gms.get.title"));
         for (GM gm: gms) {
@@ -130,9 +130,13 @@ public class GameMasters {
             boolean bold = false;
 
             if (lastLogin != null) {
-                long diff = (System.currentTimeMillis() - lastLogin.getTime()) / 1000 / 60 / 60;
-                bold = (diff / 24) > 0;
-                online = String.format(STR.getString("comm.gms.get.lastlogin"), diff / 24, diff % 24);
+                long diff = (System.currentTimeMillis() - lastLogin.getTime()) / 1000 / 60;
+                if (diff > 1) {
+                    bold = (diff / 60 / 24) > 0;
+                    String was = String.format(STR.getString("comm.gms.get.lastlogin.d"), diff / 60 / 24, diff / 60 % 24);
+                    if (diff < 60) was = STR.getString("comm.gms.get.lastlogin.j");
+                    online = String.format(STR.getString("comm.gms.get.lastlogin"), was);
+                } else online = STR.getString("comm.gms.get.lastlogin.n");
             } else online = STR.getString("comm.gms.get.lastlogin.unk");
 
             assigned = String.format(STR.getString("comm.gms.get.assigned"), (
@@ -140,13 +144,14 @@ public class GameMasters {
                     ? new SimpleDateFormat("dd.MM.yyyy HH:mm").format(dateAssigned)
                     : STR.getString("comm.gms.get.assigned.l") ));
 
-            builder.appendDescription(field(memberStr, assigned, online, bold));
+            String armaName = String.format(STR.getString("comm.gms.get.armaname"), getArmaName(gm.steamid64));
+            builder.appendDescription(field(memberStr, armaName, assigned, online, bold));
         }
         return builder.setColor(0x9900ff).build();
     }
 
-    private static String field(String memberStr, String assigned, String string, boolean bold) {
-        return String.format(bold ? "%s\n%s\n**%s**\n\n" : "%s\n%s\n%s\n\n", memberStr, assigned, string);
+    private static String field(String memberStr, String armaName, String assigned, String string, boolean bold) {
+        return String.format(bold ? "%s\n%s\n%s\n**%s**\n\n" : "%s\n%s\n%s\n%s\n\n", memberStr, armaName, assigned, string);
     }
 
     public static class GM {

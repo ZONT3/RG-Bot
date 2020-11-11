@@ -38,9 +38,11 @@ public class GMs extends LongInteractAdapter {
                 GameMasters.removeGm(getId(args[1]));
                 ok(event);
                 break;
+            case "list":
             case "get":
-                event.getChannel().sendMessage(GameMasters.retrieveGmsEmbed(event.getGuild())).queue();
+                event.getChannel().sendMessage(GameMasters.retrieveGmsEmbed(GameMasters.retrieve(), event.getGuild())).queue();
                 break;
+            default: throw new UserInvalidArgumentException(STR.getString("comm.gms.err.firsarg"));
         }
     }
 

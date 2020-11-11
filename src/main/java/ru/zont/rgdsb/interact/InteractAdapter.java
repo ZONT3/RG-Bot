@@ -8,7 +8,6 @@ import java.io.File;
 import java.util.Properties;
 
 public abstract class InteractAdapter {
-    // TODO rework this
     private Properties propertiesCache = null;
     private long propertiesCacheTS = 0;
 
@@ -60,21 +59,20 @@ public abstract class InteractAdapter {
     public static void onMessageReceived(@NotNull MessageReceivedEvent event, InteractAdapter[] adapters) {
         if (event.getAuthor().isBot()) return;
         String prefix = getPrefix();
-        if (event.getChannelType().isGuild() && !event.getMessage().getContentStripped().startsWith(prefix))
+        String content = event.getMessage().getContentStripped();
+        boolean inGuild = event.getChannelType().isGuild();
+        if (inGuild && !content.startsWith(prefix))
             return;
+        if (content.startsWith(prefix))
+            content = content.substring(prefix.length());
         InteractAdapter adapter  = null;
-        String commandName = "[Unknown]";
+        String commandName;
         for (InteractAdapter a: adapters) {
             commandName = a.getCommandName();
-            if (event.getChannelType().isGuild()) {
-                if (!event.getMessage().getContentStripped().startsWith(prefix + commandName))
-                    continue;
-            } else {
-                if (!event.getMessage().getContentStripped().startsWith(commandName))
-                    continue;
+            if (content.startsWith(commandName)) {
+                adapter = a;
+                break;
             }
-            adapter = a;
-            break;
         }
 
         LOG.d("Command received: '%s' from user %s", event.getMessage().getContentRaw(), event.getAuthor().getAsTag());
@@ -104,7 +102,7 @@ public abstract class InteractAdapter {
                     .sendMessage(Messages.error(
                             Strings.STR.getString("err.args.title"),
                             e.getMessage() + (e.printSyntax ? ("\n\n" +
-                                    String.format(Strings.STR.getString("err.args.syntax"), adapter.getExample())) : "") ))
+                                    String.format(Strings.STR.getString("err.args.syntax"), adapter.getExample(), inGuild ? prefix : "", adapter.getCommandName())) : "") ))
                     .queue();
         }
     }
