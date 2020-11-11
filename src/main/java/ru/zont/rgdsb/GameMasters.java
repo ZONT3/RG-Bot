@@ -115,7 +115,7 @@ public class GameMasters {
     }
 
     private static String field(String memberStr, String string, boolean bold) {
-        return String.format(bold ? "%s\n**%s**\n" : "%s\n%s\n", memberStr, string);
+        return String.format(bold ? "%s\n**%s**\n\n" : "%s\n%s\n\n", memberStr, string);
     }
 
     public static class GM {

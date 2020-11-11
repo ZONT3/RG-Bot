@@ -2,16 +2,20 @@ package ru.zont.rgdsb.interact;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import ru.zont.rgdsb.*;
+import ru.zont.rgdsb.Commands;
+import ru.zont.rgdsb.GameMasters;
+import ru.zont.rgdsb.LongInteractAdapter;
+import ru.zont.rgdsb.PropertiesTools;
 
 import java.awt.*;
 import java.util.Properties;
 
-import static ru.zont.rgdsb.Strings.*;
+import static ru.zont.rgdsb.Strings.STR;
 
 public class GMs extends LongInteractAdapter {
     public GMs() throws RegisterException {
@@ -48,10 +52,7 @@ public class GMs extends LongInteractAdapter {
     }
 
     private long getId(String raw) {
-        int st = 3;
-        if (raw.matches("<@\\d+>"))
-            st = 2;
-        return Long.parseLong(raw.substring(st, raw.length() - 1));
+        return Long.parseLong(raw.substring(raw.matches("<@\\d+>") ? 2 : 3, raw.length() - 1));
     }
 
     private void set(Guild guild, long id, String steamid64) {
