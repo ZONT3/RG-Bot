@@ -53,6 +53,61 @@ public class GameMasters {
         }
     }
 
+    public static String getArmaName(String steamid64) {
+        try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
+             Statement st = connection.createStatement()) {
+            ResultSet resultSet = st.executeQuery(
+                    "SELECT p_name " +
+                        "FROM profiles_presistent " +
+                        "WHERE p_guid='\""+steamid64+"\"' " +
+                        "LIMIT 1"
+            );
+            if (!resultSet.next())
+                return "<null>";
+            return resultSet.getString(1);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static Date getLastLogin(String steamid) {
+        try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
+             Statement st = connection.createStatement()) {
+            ResultSet resultSet = st.executeQuery(
+                    "SELECT p_lastupd " +
+                        "FROM profiles_presistent " +
+                        "WHERE p_guid='\"" + steamid + "\"' " +
+                        "LIMIT 1"
+            );
+            if (!resultSet.next())
+                return null;
+            Timestamp timestamp = resultSet.getTimestamp(1);
+            if (timestamp == null) return null;
+            return new Date(timestamp.toInstant().getEpochSecond() * 1000);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static Date getAssignedDate(long userid) {
+        try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
+             Statement st = connection.createStatement()) {
+            ResultSet resultSet = st.executeQuery(
+                    "SELECT st_assigned " +
+                            "FROM game_masters " +
+                            "WHERE id_discord=" + userid + " " +
+                            "LIMIT 1"
+            );
+            if (!resultSet.next())
+                return null;
+            Timestamp timestamp = resultSet.getTimestamp(1);
+            if (timestamp == null) return null;
+            return new Date(timestamp.toInstant().getEpochSecond() * 1000);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static class GM {
         public String steamid64;
         public long userid;

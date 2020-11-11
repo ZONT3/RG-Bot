@@ -68,7 +68,7 @@ public class GMs extends LongInteractAdapter {
         GameMasters.GM gm = new GameMasters.GM();
         gm.steamid64 = steamid64;
         gm.userid = id;
-        gm.armaname = Messages.getArmaName(steamid64);
+        gm.armaname = GameMasters.getArmaName(steamid64);
         gm.dsname = member != null ? member.getEffectiveName() : "<null>";
         GameMasters.setGm(gm);
     }

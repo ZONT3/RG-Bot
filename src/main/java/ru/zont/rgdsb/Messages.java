@@ -131,61 +131,6 @@ public class Messages {
         return builder.setTimestamp(Instant.now()).build();
     }
 
-    public static String getArmaName(String steamid64) {
-        try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
-             Statement st = connection.createStatement()) {
-            ResultSet resultSet = st.executeQuery(
-                    "SELECT p_name " +
-                        "FROM profiles_presistent " +
-                        "WHERE p_guid='\""+steamid64+"\"' " +
-                        "LIMIT 1"
-            );
-            if (!resultSet.next())
-                return "<null>";
-            return resultSet.getString(1);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static Date getLastLogin(String steamid) {
-        try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
-             Statement st = connection.createStatement()) {
-            ResultSet resultSet = st.executeQuery(
-                    "SELECT p_lastupd " +
-                        "FROM profiles_presistent " +
-                        "WHERE p_guid='\"" + steamid + "\"' " +
-                        "LIMIT 1"
-            );
-            if (!resultSet.next())
-                return null;
-            Timestamp timestamp = resultSet.getTimestamp(1);
-            if (timestamp == null) return null;
-            return new Date(timestamp.toInstant().getEpochSecond() * 1000);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static Date getAssignedDate(long userid) {
-        try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
-             Statement st = connection.createStatement()) {
-            ResultSet resultSet = st.executeQuery(
-                    "SELECT st_assigned " +
-                            "FROM game_masters " +
-                            "WHERE id_discord=" + userid + " " +
-                            "LIMIT 1"
-            );
-            if (!resultSet.next())
-                return null;
-            Timestamp timestamp = resultSet.getTimestamp(1);
-            if (timestamp == null) return null;
-            return new Date(timestamp.toInstant().getEpochSecond() * 1000);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static MessageEmbed gmList(List<GameMasters.GM> gms, Guild guild) {
         return gmList(gms, guild, false, false);
     }
@@ -196,8 +141,8 @@ public class Messages {
         for (GameMasters.GM gm: gms) {
             Member member = guild.getMemberById(gm.userid);
             String memberStr = member != null ? member.getAsMention() : STR.getString("comm.gms.get.unknown");
-            Date lastLogin = getLastLogin(gm.steamid64);
-            Date dateAssigned = getAssignedDate(gm.userid);
+            Date lastLogin = GameMasters.getLastLogin(gm.steamid64);
+            Date dateAssigned = GameMasters.getAssignedDate(gm.userid);
 
             String online, assigned;
             boolean bold = false;
@@ -217,7 +162,7 @@ public class Messages {
                     ? new SimpleDateFormat("dd.MM.yyyy HH:mm").format(dateAssigned)
                     : STR.getString("comm.gms.get.assigned.l") ));
 
-            String armaName = String.format(STR.getString("comm.gms.get.armaname"), getArmaName(gm.steamid64));
+            String armaName = String.format(STR.getString("comm.gms.get.armaname"), GameMasters.getArmaName(gm.steamid64));
             String steamidStr = String.format("SteamID64: `%s`", gm.steamid64);
             builder.appendDescription(field(memberStr, armaName, assigned, online, steamidStr, bold, less, steamid));
         }

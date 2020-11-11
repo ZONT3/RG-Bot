@@ -28,7 +28,7 @@ public class StatusGMs extends ServerStatusEntry {
     private void updateNicks(List<GameMasters.GM> gms, Guild guild) {
         for (GameMasters.GM gm: gms) {
             Member member = guild.getMemberById(gm.userid);
-            String armaName = Messages.getArmaName(gm.steamid64);
+            String armaName = GameMasters.getArmaName(gm.steamid64);
             String dsname = member != null ? member.getEffectiveName() : STR.getString("comm.gms.get.unknown");
             if (!gm.dsname.equals(dsname) || !gm.armaname.equals(armaName)) {
                 gm.armaname = armaName;
