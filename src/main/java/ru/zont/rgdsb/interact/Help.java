@@ -38,15 +38,17 @@ public class Help extends InteractAdapter {
             EmbedBuilder builder = new EmbedBuilder()
                     .setTitle(STR.getString("comm.help.list.title"))
                     .setColor(Color.LIGHT_GRAY);
-            for (Map.Entry<String, InteractAdapter> e: Commands.getAllCommands().entrySet())
+            for (Map.Entry<String, InteractAdapter> e: Commands.getAllCommands().entrySet()) {
+                if (e.getValue().isHidden()) continue;
                 builder.addField(
                         e.getKey(),
                         String.format("`%s%s`: %s",
-                                event.getMember()!=null ? getPrefix() : "",
+                                event.getMember() != null ? getPrefix() : "",
                                 e.getValue().getExample(),
                                 e.getValue().getDescription().substring(0, Math.min(90, e.getValue().getDescription().length()))
                                         + (e.getValue().getDescription().length() > 90 ? "..." : "")),
-                        false );
+                        false);
+            }
             event.getChannel().sendMessage(builder.build()).queue();
         } else {
             event.getChannel().sendMessage(

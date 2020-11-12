@@ -102,8 +102,10 @@ public class GMs extends LongInteractAdapter {
 
     @Override
     public boolean checkPermission(MessageReceivedEvent event) {
+        // TODO rework this
+
         String[] args = Commands.parseArgs(this, event);
-        if (args.length >= 2 && args[1].toLowerCase().equals("get"))
+        if (args.length >= 2 && (args[1].toLowerCase().equals("get") || (args[1].toLowerCase().equals("list"))))
             return true;
         Member member = event.getMember();
         if (member == null) return false;

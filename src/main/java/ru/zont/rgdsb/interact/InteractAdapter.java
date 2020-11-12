@@ -23,6 +23,8 @@ public abstract class InteractAdapter {
 
     public boolean checkPermission(MessageReceivedEvent event) { return true; }
 
+    public boolean isHidden() { return false; }
+
     protected void onInsufficientPermissions(@NotNull MessageReceivedEvent event) {
         Messages.printError(event.getChannel(), Strings.STR.getString("err.insufficient_perm.title"), Strings.STR.getString("err.insufficient_perm"));
     }
