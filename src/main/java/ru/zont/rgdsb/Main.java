@@ -73,7 +73,7 @@ public class Main extends ListenerAdapter {
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .setScanners(new SubTypesScanner(false /* don't exclude Object.class */), new ResourcesScanner())
                 .setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0])))
-                .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix("ru.zont.rgdsb.interact"))));
+                .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix("ru.zont.rgdsb.command"))));
         Set<Class<? extends CommandAdapter>> allClasses =
                 reflections.getSubTypesOf(CommandAdapter.class);
 
@@ -81,7 +81,7 @@ public class Main extends ListenerAdapter {
         for (Class<? extends CommandAdapter> klass: allClasses) {
             if (Modifier.isAbstract(klass.getModifiers())) continue;
             try {
-                System.out.printf("Registering InteractAdapter class: %s\n", klass.getSimpleName());
+                System.out.printf("Registering CommandAdapter class: %s\n", klass.getSimpleName());
                 CommandAdapter adapter = klass.newInstance();
                 res.add(adapter);
                 System.out.printf("Successfully registered adapter #%d, commandName: %s\n", res.size(), adapter.getCommandName());
