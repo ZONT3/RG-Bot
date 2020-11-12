@@ -1,4 +1,4 @@
-package ru.zont.rgdsb.interact;
+package ru.zont.rgdsb.command;
 
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
@@ -10,7 +10,7 @@ import java.util.Properties;
 
 import static ru.zont.rgdsb.Strings.STR;
 
-public class Say extends InteractAdapter {
+public class Say extends CommandAdapter {
     public Say() throws RegisterException {
         super();
     }

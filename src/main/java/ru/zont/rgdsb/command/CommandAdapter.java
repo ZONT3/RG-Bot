@@ -1,4 +1,4 @@
-package ru.zont.rgdsb.interact;
+package ru.zont.rgdsb.command;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -7,7 +7,7 @@ import ru.zont.rgdsb.*;
 import java.io.File;
 import java.util.Properties;
 
-public abstract class InteractAdapter {
+public abstract class CommandAdapter {
     private Properties propertiesCache = null;
     private long propertiesCacheTS = 0;
 
@@ -29,7 +29,7 @@ public abstract class InteractAdapter {
         Messages.printError(event.getChannel(), Strings.STR.getString("err.insufficient_perm.title"), Strings.STR.getString("err.insufficient_perm"));
     }
 
-    public InteractAdapter() throws RegisterException {
+    public CommandAdapter() throws RegisterException {
         String commandName = getCommandName();
         if (!commandName.matches("[\\w.!-=+-@#$]+") && !commandName.isEmpty())
             throw new RegisterException("Bad command name: " + commandName);
@@ -58,7 +58,7 @@ public abstract class InteractAdapter {
         return PropertiesTools.getGlobalProps().getProperty("command_prefix");
     }
 
-    public static void onMessageReceived(@NotNull MessageReceivedEvent event, InteractAdapter[] adapters) {
+    public static void onMessageReceived(@NotNull MessageReceivedEvent event, CommandAdapter[] adapters) {
         if (event.getAuthor().isBot()) return;
         String prefix = getPrefix();
         String content = event.getMessage().getContentStripped();
@@ -67,9 +67,9 @@ public abstract class InteractAdapter {
             return;
         if (content.startsWith(prefix))
             content = content.substring(prefix.length());
-        InteractAdapter adapter  = null;
+        CommandAdapter adapter  = null;
         String commandName;
-        for (InteractAdapter a: adapters) {
+        for (CommandAdapter a: adapters) {
             commandName = a.getCommandName();
             if (content.startsWith(commandName)) {
                 adapter = a;

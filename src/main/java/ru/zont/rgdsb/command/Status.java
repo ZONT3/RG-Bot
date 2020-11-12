@@ -1,4 +1,4 @@
-package ru.zont.rgdsb.interact;
+package ru.zont.rgdsb.command;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -14,7 +14,7 @@ import java.util.Properties;
 
 import static ru.zont.rgdsb.Strings.STR;
 
-public class Status extends InteractAdapter {
+public class Status extends CommandAdapter {
     public Status() throws RegisterException {
         super();
     }

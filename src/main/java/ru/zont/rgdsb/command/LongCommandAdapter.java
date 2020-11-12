@@ -1,10 +1,10 @@
-package ru.zont.rgdsb.interact;
+package ru.zont.rgdsb.command;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class LongInteractAdapter extends InteractAdapter {
-    public LongInteractAdapter() throws RegisterException {
+public abstract class LongCommandAdapter extends CommandAdapter {
+    public LongCommandAdapter() throws RegisterException {
         super();
     }
 

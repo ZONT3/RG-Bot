@@ -1,4 +1,4 @@
-package ru.zont.rgdsb.interact;
+package ru.zont.rgdsb.command;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -15,7 +15,7 @@ import java.util.Properties;
 
 import static ru.zont.rgdsb.Strings.STR;
 
-public class Config extends InteractAdapter {
+public class Config extends CommandAdapter {
     public Config() throws RegisterException {
         super();
     }
@@ -54,14 +54,14 @@ public class Config extends InteractAdapter {
                     parseProps(PropertiesTools.getGlobalProps()),
                     false );
 
-            HashMap<String, InteractAdapter> comms = Commands.getAllCommands();
-            for (Map.Entry<String, InteractAdapter> entry: comms.entrySet())
+            HashMap<String, CommandAdapter> comms = Commands.getAllCommands();
+            for (Map.Entry<String, CommandAdapter> entry: comms.entrySet())
                 if (entry.getValue().getProps().size() > 0)
                     builder.addField( entry.getKey(), parseProps(entry.getValue().getProps()), false );
 
             return builder.build();
         } else if (args.length == 2) {
-            InteractAdapter comm = Commands.forName(args[1]);
+            CommandAdapter comm = Commands.forName(args[1]);
             if (comm == null && !args[1].toLowerCase().equals("global"))
                 throwUnknownComm(args[1]);
 
@@ -73,7 +73,7 @@ public class Config extends InteractAdapter {
             builder.setDescription(parseProps(props));
             return builder.build();
         } else if (args.length >= 3) {
-            InteractAdapter comm = Commands.forName(args[1]);
+            CommandAdapter comm = Commands.forName(args[1]);
             if (comm == null && !args[1].toLowerCase().equals("global"))
                 throwUnknownComm(args[1]);
 
@@ -109,7 +109,7 @@ public class Config extends InteractAdapter {
             props.setProperty(key, value);
             PropertiesTools.storeGlobalProps(props);
         } else {
-            InteractAdapter comm = Commands.forName(command);
+            CommandAdapter comm = Commands.forName(command);
             if (comm == null)
                 throwUnknownComm(command);
 

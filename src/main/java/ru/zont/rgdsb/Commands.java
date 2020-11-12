@@ -1,7 +1,7 @@
 package ru.zont.rgdsb;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import ru.zont.rgdsb.interact.InteractAdapter;
+import ru.zont.rgdsb.command.CommandAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,38 +10,38 @@ import java.util.Map;
 public class Commands {
 
 
-    public static String[] parseArgs(InteractAdapter adapter, MessageReceivedEvent event) {
+    public static String[] parseArgs(CommandAdapter adapter, MessageReceivedEvent event) {
         String msg = parseInputRaw(adapter, event);
         if (msg.isEmpty()) return new String[0];
         return ArgumentTokenizer.tokenize(msg).toArray(new String[0]);
     }
 
-    public static String parseInputRaw(InteractAdapter adapter, MessageReceivedEvent event) {
+    public static String parseInputRaw(CommandAdapter adapter, MessageReceivedEvent event) {
         String msg = event.getMessage().getContentRaw();
-        if (!msg.startsWith(InteractAdapter.getPrefix() + adapter.getCommandName()) && !msg.startsWith(adapter.getCommandName()))
+        if (!msg.startsWith(CommandAdapter.getPrefix() + adapter.getCommandName()) && !msg.startsWith(adapter.getCommandName()))
             throw new IllegalStateException("Provided event does not contain a command request");
-        if (msg.startsWith(InteractAdapter.getPrefix()))
-            msg = msg.replaceFirst(InteractAdapter.getPrefix() + adapter.getCommandName(), "");
+        if (msg.startsWith(CommandAdapter.getPrefix()))
+            msg = msg.replaceFirst(CommandAdapter.getPrefix() + adapter.getCommandName(), "");
         else msg = msg.replaceFirst(adapter.getCommandName(), "");
         return msg.trim();
     }
 
-    public static Input parseInput(InteractAdapter adapter, MessageReceivedEvent event) {
+    public static Input parseInput(CommandAdapter adapter, MessageReceivedEvent event) {
         return new Input(parseArgs(adapter, event));
     }
 
-    public static HashMap<String, InteractAdapter> getAllCommands() {
-        HashMap<String, InteractAdapter> res = new HashMap<>();
-        for (InteractAdapter a: Globals.commandAdapters)
+    public static HashMap<String, CommandAdapter> getAllCommands() {
+        HashMap<String, CommandAdapter> res = new HashMap<>();
+        for (CommandAdapter a: Globals.commandAdapters)
             if (!a.getCommandName().isEmpty())
                 res.put(a.getCommandName(), a);
         return res;
     }
 
-    public static InteractAdapter forName(String command) {
-        InteractAdapter comm = null;
-        HashMap<String, InteractAdapter> comms = Commands.getAllCommands();
-        for (Map.Entry<String, InteractAdapter> entry: comms.entrySet())
+    public static CommandAdapter forName(String command) {
+        CommandAdapter comm = null;
+        HashMap<String, CommandAdapter> comms = Commands.getAllCommands();
+        for (Map.Entry<String, CommandAdapter> entry: comms.entrySet())
             if (command.toLowerCase().equals(entry.getKey().toLowerCase()))
                 comm = entry.getValue();
         return comm;

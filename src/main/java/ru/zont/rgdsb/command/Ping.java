@@ -1,4 +1,4 @@
-package ru.zont.rgdsb.interact;
+package ru.zont.rgdsb.command;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -9,7 +9,7 @@ import java.util.Properties;
 
 import static ru.zont.rgdsb.Strings.STR;
 
-public class Ping extends InteractAdapter {
+public class Ping extends CommandAdapter {
     public Ping() throws RegisterException {
         super();
     }

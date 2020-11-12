@@ -13,7 +13,7 @@ import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
-import ru.zont.rgdsb.interact.InteractAdapter;
+import ru.zont.rgdsb.command.CommandAdapter;
 import ru.zont.rgdsb.listeners.LPlayersMonitoring;
 import ru.zont.rgdsb.listeners.LServerStatus;
 
@@ -46,7 +46,7 @@ public class Main extends ListenerAdapter {
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         try {
-            InteractAdapter.onMessageReceived(event, Globals.commandAdapters);
+            CommandAdapter.onMessageReceived(event, Globals.commandAdapters);
         } catch (Exception e) {
             e.printStackTrace();
             event.getChannel().sendMessage(
@@ -58,7 +58,7 @@ public class Main extends ListenerAdapter {
         }
     }
 
-    private static InteractAdapter[] registerInteracts() {
+    private static CommandAdapter[] registerInteracts() {
         if (PropertiesTools.DIR_PROPS.exists() && !PropertiesTools.DIR_PROPS.isDirectory())
             if (!PropertiesTools.DIR_PROPS.delete())
                 throw new RuntimeException("Cannot remove file named as dir 'properties'");
@@ -74,15 +74,15 @@ public class Main extends ListenerAdapter {
                 .setScanners(new SubTypesScanner(false /* don't exclude Object.class */), new ResourcesScanner())
                 .setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0])))
                 .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix("ru.zont.rgdsb.interact"))));
-        Set<Class<? extends InteractAdapter>> allClasses =
-                reflections.getSubTypesOf(InteractAdapter.class);
+        Set<Class<? extends CommandAdapter>> allClasses =
+                reflections.getSubTypesOf(CommandAdapter.class);
 
-        ArrayList<InteractAdapter> res = new ArrayList<>();
-        for (Class<? extends InteractAdapter> klass: allClasses) {
+        ArrayList<CommandAdapter> res = new ArrayList<>();
+        for (Class<? extends CommandAdapter> klass: allClasses) {
             if (Modifier.isAbstract(klass.getModifiers())) continue;
             try {
                 System.out.printf("Registering InteractAdapter class: %s\n", klass.getSimpleName());
-                InteractAdapter adapter = klass.newInstance();
+                CommandAdapter adapter = klass.newInstance();
                 res.add(adapter);
                 System.out.printf("Successfully registered adapter #%d, commandName: %s\n", res.size(), adapter.getCommandName());
             } catch (Exception e) {
@@ -90,6 +90,6 @@ public class Main extends ListenerAdapter {
             }
         }
 
-        return res.toArray(new InteractAdapter[0]);
+        return res.toArray(new CommandAdapter[0]);
     }
 }
