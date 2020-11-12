@@ -12,6 +12,7 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 
 import static ru.zont.rgdsb.Strings.STR;
@@ -139,17 +140,23 @@ public class Messages {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle(STR.getString("comm.gms.get.title"));
         for (GameMasters.GM gm: gms) {
+            Date lastLogin = GameMasters.getLastLogin(gm.steamid64);
+            gm.lastlogin = lastLogin != null ? lastLogin.getTime() : 0;
+        }
+
+        gms.sort(Comparator.comparingLong(o -> o.lastlogin));
+
+        for (GameMasters.GM gm: gms) {
             Member member = guild.getMemberById(gm.userid);
             String memberStr = member != null ? member.getAsMention() : STR.getString("comm.gms.get.unknown");
-            Date lastLogin = GameMasters.getLastLogin(gm.steamid64);
             Date dateAssigned = GameMasters.getAssignedDate(gm.userid);
 
             String online, assigned;
             boolean bold = false;
 
-            if (lastLogin != null) {
-                long diff = (System.currentTimeMillis() - lastLogin.getTime()) / 1000 / 60;
-                if (diff > 1) {
+            if (gm.lastlogin > 0) {
+                long diff = (System.currentTimeMillis() - gm.lastlogin) / 1000 / 60;
+                if (diff >= 1) {
                     bold = (diff / 60 / 24) > 0;
                     String was = String.format(STR.getString("comm.gms.get.lastlogin.d"), diff / 60 / 24, diff / 60 % 24);
                     if (diff < 60) was = STR.getString("comm.gms.get.lastlogin.j");

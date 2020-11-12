@@ -113,5 +113,6 @@ public class GameMasters {
         public long userid;
         public String dsname;
         public String armaname;
+        public long lastlogin;
     }
 }
