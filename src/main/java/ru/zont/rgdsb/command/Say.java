@@ -35,6 +35,11 @@ public class Say extends CommandAdapter {
     }
 
     @Override
+    public boolean isHidden() {
+        return true;
+    }
+
+    @Override
     public String getCommandName() {
         return "say";
     }
