@@ -154,7 +154,7 @@ public class Messages {
             String online, assigned;
             boolean bold = false;
 
-            if (gm.lastlogin > 0) {
+            if (gm.lastlogin > 1) {
                 long diff = (System.currentTimeMillis() - gm.lastlogin) / 1000 / 60;
                 if (diff >= 1) {
                     bold = (diff / 60 / 24) > 0;
