@@ -69,7 +69,7 @@ public class GMs extends LongCommandAdapter {
         gm.steamid64 = steamid64;
         gm.userid = id;
         gm.armaname = GameMasters.getArmaName(steamid64);
-        gm.dsname = member != null ? member.getEffectiveName() : "<null>";
+        gm.dsname = member != null ? member.getEffectiveName() : STR.getString("comm.gms.get.unknown");
         GameMasters.setGm(gm);
     }
 

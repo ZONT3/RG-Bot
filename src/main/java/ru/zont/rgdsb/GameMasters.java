@@ -3,6 +3,8 @@ package ru.zont.rgdsb;
 import java.sql.*;
 import java.util.ArrayList;
 
+import static ru.zont.rgdsb.Strings.STR;
+
 public class GameMasters {
     public static ArrayList<GM> retrieve() {
         ArrayList<GM> res = new ArrayList<>();
@@ -63,7 +65,7 @@ public class GameMasters {
                         "LIMIT 1"
             );
             if (!resultSet.next())
-                return "<null>";
+                return STR.getString("comm.gms.get.unknown");
             return resultSet.getString(1);
         } catch (SQLException e) {
             throw new RuntimeException(e);
