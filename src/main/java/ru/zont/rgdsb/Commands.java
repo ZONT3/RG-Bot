@@ -18,10 +18,10 @@ public class Commands {
 
     public static String parseInputRaw(CommandAdapter adapter, MessageReceivedEvent event) {
         String msg = event.getMessage().getContentRaw();
-        if (!msg.startsWith(CommandAdapter.getPrefix() + adapter.getCommandName()) && !msg.startsWith(adapter.getCommandName()))
+        if (!msg.startsWith(PropertiesTools.getPrefix() + adapter.getCommandName()) && !msg.startsWith(adapter.getCommandName()))
             throw new IllegalStateException("Provided event does not contain a command request");
-        if (msg.startsWith(CommandAdapter.getPrefix()))
-            msg = msg.replaceFirst(CommandAdapter.getPrefix() + adapter.getCommandName(), "");
+        if (msg.startsWith(PropertiesTools.getPrefix()))
+            msg = msg.replaceFirst(PropertiesTools.getPrefix() + adapter.getCommandName(), "");
         else msg = msg.replaceFirst(adapter.getCommandName(), "");
         return msg.trim();
     }

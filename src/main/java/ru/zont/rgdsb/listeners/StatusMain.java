@@ -2,12 +2,14 @@ package ru.zont.rgdsb.listeners;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import ru.zont.rgdsb.Globals;
 import ru.zont.rgdsb.Messages;
 import ru.zont.rgdsb.PropertiesTools;
+import ru.zont.rgdsb.Strings;
 
 import java.sql.*;
 import java.util.List;
@@ -22,6 +24,13 @@ public class StatusMain extends ServerStatusEntry {
     @Override
     void update(Message entryMessage) {
         ServerInfoStruct struct = retrieveServerInfo();
+
+        entryMessage.getJDA().getPresence().setActivity(
+                Activity.watching(
+                        String.format(Strings.STR.getString("status.main.status"),
+                                struct.count,
+                                PropertiesTools.getPrefix() )));
+
         Role roleGM = entryMessage.getGuild().getRoleById(PropertiesTools.getRoleGmID());
         entryMessage.editMessage(Messages.status(struct, roleGM != null ? roleGM.getAsMention() : "GM")).queue();
     }

@@ -113,6 +113,10 @@ public class PropertiesTools {
             storeGlobalProps(getGlobalPropsDefaults());
     }
 
+    public static String getPrefix() {
+        return getGlobalProps().getProperty("command_prefix");
+    }
+
     public static class IdNotProvidedException extends RuntimeException {
         public IdNotProvidedException(String s) {
             super(s);

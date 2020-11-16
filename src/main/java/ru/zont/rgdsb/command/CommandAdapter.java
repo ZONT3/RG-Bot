@@ -54,13 +54,9 @@ public abstract class CommandAdapter {
         propertiesCacheTS = System.currentTimeMillis();
     }
 
-    public static String getPrefix() {
-        return PropertiesTools.getGlobalProps().getProperty("command_prefix");
-    }
-
     public static void onMessageReceived(@NotNull MessageReceivedEvent event, CommandAdapter[] adapters) {
         if (event.getAuthor().isBot()) return;
-        String prefix = getPrefix();
+        String prefix = PropertiesTools.getPrefix();
         String content = event.getMessage().getContentStripped();
         boolean inGuild = event.getChannelType().isGuild();
         if (inGuild && !content.startsWith(prefix))
