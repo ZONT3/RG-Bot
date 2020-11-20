@@ -30,8 +30,8 @@ public class GMs extends LongCommandAdapter {
         switch (args.get(0).toLowerCase()) {
             case "set":
                 checkArgs(args, 3);
-                set(event.getGuild(), GameMasters.getId(args.get(1)), args.get(2));
-                ok(event);
+                GameMasters.GM gm = set(event.getGuild(), GameMasters.getId(args.get(1)), args.get(2));
+                added(event, gm, args.get(1));
                 break;
             case "rm":
                 checkArgs(args, 2);
@@ -59,6 +59,16 @@ public class GMs extends LongCommandAdapter {
         }
     }
 
+    private void added(@NotNull MessageReceivedEvent event, GameMasters.GM gm, String s) {
+        event.getChannel().sendMessage(new EmbedBuilder()
+                .setTitle(String.format(STR.getString("comm.gms.set.ok.title"), s))
+                .appendDescription(String.format(STR.getString("comm.gms.get.steamid"), gm.steamid64))
+                .appendDescription(String.format(STR.getString("comm.gms.get.armaname"), gm.armaname))
+                .build()
+        ).queue();
+        LOG.d("Assigned GM: %s [%s] by %s", gm.dsname, gm.steamid64, event.getAuthor().getAsTag());
+    }
+
     private void ok(@NotNull MessageReceivedEvent event) {
         event.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Color.GREEN)
@@ -66,7 +76,7 @@ public class GMs extends LongCommandAdapter {
                 .build()).queue();
     }
 
-    private void set(Guild guild, long id, String steamid64) {
+    private GameMasters.GM set(Guild guild, long id, String steamid64) {
         Member member = guild.getMemberById(id);
         GameMasters.GM gm = new GameMasters.GM();
         gm.steamid64 = steamid64;
@@ -74,6 +84,7 @@ public class GMs extends LongCommandAdapter {
         gm.armaname = GameMasters.getArmaName(steamid64);
         gm.dsname = member != null ? member.getEffectiveName() : STR.getString("comm.gms.get.unknown");
         GameMasters.setGm(gm);
+        return gm;
     }
 
     private static void checkArgs(ArrayList<String> args, int needed) {
