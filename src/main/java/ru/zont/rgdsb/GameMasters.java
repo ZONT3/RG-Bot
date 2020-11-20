@@ -52,7 +52,7 @@ public class GameMasters {
             if (id.matches("<@!?\\d+>"))
                 st.executeUpdate("DELETE FROM game_masters WHERE id_discord="+ getId(id));
             else if (id.matches("\\d+"))
-                st.executeUpdate("DELETE FROM game_masters WHERE id_steam64='" + id + "'");
+                st.executeUpdate("DELETE FROM game_masters WHERE id_steam64='\"" + id + "\"'");
             else throw new RuntimeException("Invalid discord raw mention or steamid64");
         } catch (SQLException e) {
             throw new RuntimeException(e);
