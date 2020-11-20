@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import ru.zont.rgdsb.*;
 import ru.zont.rgdsb.Commands.Input;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -61,9 +60,13 @@ public class GMs extends LongCommandAdapter {
 
     private void added(@NotNull MessageReceivedEvent event, GameMasters.GM gm, String s) {
         event.getChannel().sendMessage(new EmbedBuilder()
-                .setTitle(String.format(STR.getString("comm.gms.set.ok.title"), s))
+                .appendDescription("**")
+                .appendDescription(String.format(STR.getString("comm.gms.set.ok.title"), s))
+                .appendDescription("**\n")
                 .appendDescription(String.format(STR.getString("comm.gms.get.steamid"), gm.steamid64))
+                .appendDescription("\n")
                 .appendDescription(String.format(STR.getString("comm.gms.get.armaname"), gm.armaname))
+                .setColor(0x00AA00)
                 .build()
         ).queue();
         LOG.d("Assigned GM: %s [%s] by %s", gm.dsname, gm.steamid64, event.getAuthor().getAsTag());
@@ -71,7 +74,7 @@ public class GMs extends LongCommandAdapter {
 
     private void ok(@NotNull MessageReceivedEvent event) {
         event.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(Color.GREEN)
+                .setColor(0x00AA00)
                 .setDescription(":white_check_mark:")
                 .build()).queue();
     }
