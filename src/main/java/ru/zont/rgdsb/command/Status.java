@@ -51,7 +51,7 @@ public class Status extends CommandAdapter {
     }
 
     @Override
-    public String getExample() {
+    public String getSynopsis() {
         return "status";
     }
 

@@ -17,7 +17,7 @@ public abstract class CommandAdapter {
 
     public abstract void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException;
 
-    public abstract String getExample();
+    public abstract String getSynopsis();
 
     public abstract String getDescription();
 
@@ -100,7 +100,7 @@ public abstract class CommandAdapter {
                     .sendMessage(Messages.error(
                             Strings.STR.getString("err.args.title"),
                             e.getMessage() + (e.printSyntax ? ("\n\n" +
-                                    String.format(Strings.STR.getString("err.args.syntax"), adapter.getExample(), inGuild ? prefix : "", adapter.getCommandName())) : "") ))
+                                    String.format(Strings.STR.getString("err.args.syntax"), adapter.getSynopsis(), inGuild ? prefix : "", adapter.getCommandName())) : "") ))
                     .queue();
         }
     }

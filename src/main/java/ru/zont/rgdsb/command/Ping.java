@@ -25,7 +25,7 @@ public class Ping extends CommandAdapter {
     }
 
     @Override
-    public String getExample() {
+    public String getSynopsis() {
         return "ping";
     }
 

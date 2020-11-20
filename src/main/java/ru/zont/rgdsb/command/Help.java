@@ -42,14 +42,15 @@ public class Help extends CommandAdapter {
                     .setTitle(STR.getString("comm.help.list.title"))
                     .setColor(Color.LIGHT_GRAY);
             for (Map.Entry<String, CommandAdapter> e: Commands.getAllCommands().entrySet()) {
-                if (e.getValue().isHidden()) continue;
+                CommandAdapter command = e.getValue();
+                if (command.isHidden()) continue;
                 builder.addField(
                         e.getKey(),
                         String.format("`%s%s`: %s",
                                 event.getMember() != null ? PropertiesTools.getPrefix() : "",
-                                e.getValue().getExample(),
-                                e.getValue().getDescription().substring(0, Math.min(90, e.getValue().getDescription().length()))
-                                        + (e.getValue().getDescription().length() > 90 ? "..." : "")),
+                                getFirstSynopsis(command.getSynopsis()),
+                                command.getDescription().substring(0, Math.min(90, command.getDescription().length()))
+                                        + (command.getDescription().length() > 90 ? "..." : "")),
                         false);
             }
             builder.setFooter(String.format(STR.getString("version"), Globals.version));
@@ -58,9 +59,8 @@ public class Help extends CommandAdapter {
             event.getChannel().sendMessage(
                     new EmbedBuilder()
                             .setTitle(comm.getCommandName())
-                            .addField(STR.getString("comm.help.entry.example"), String.format("`%s%s`",
-                                    event.getMember()!=null ? PropertiesTools.getPrefix() : "", comm.getExample()
-                            ), false)
+                            .addField(STR.getString("comm.help.entry.example"), formatSynopsis(comm.getSynopsis(),
+                                    event.getMember() == null ? "" : PropertiesTools.getPrefix()), false)
                             .addField(STR.getString("comm.help.entry.desc"), comm.getDescription(), false)
                             .setColor(Color.LIGHT_GRAY)
                             .build()
@@ -68,8 +68,17 @@ public class Help extends CommandAdapter {
         }
     }
 
+    private String getFirstSynopsis(String synopsis) {
+        int i = synopsis.indexOf('\n');
+        return synopsis.substring(0, i <= 0 ? synopsis.length() : i);
+    }
+
+    private String formatSynopsis(String synopsis, String prefix) {
+        return String.format("```%s%s```", prefix, synopsis.replaceAll("\n", "\n" + prefix));
+    }
+
     @Override
-    public String getExample() {
+    public String getSynopsis() {
         return "help [command]";
     }
 

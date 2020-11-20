@@ -46,10 +46,14 @@ public class GameMasters {
         }
     }
 
-    public static void removeGm(long id) {
+    public static void removeGm(String id) {
         try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
              Statement st = connection.createStatement()) {
-            st.executeUpdate("DELETE FROM game_masters WHERE id_discord="+id);
+            if (id.matches("<@!?\\d+>"))
+                st.executeUpdate("DELETE FROM game_masters WHERE id_discord="+ getId(id));
+            else if (id.matches("\\d+"))
+                st.executeUpdate("DELETE FROM game_masters WHERE id_steam64='" + id + "'");
+            else throw new RuntimeException("Invalid discord raw mention or steamid64");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -108,6 +112,10 @@ public class GameMasters {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static long getId(String raw) {
+        return Long.parseLong(raw.substring(raw.matches("<@\\d+>") ? 2 : 3, raw.length() - 1));
     }
 
     public static class GM {

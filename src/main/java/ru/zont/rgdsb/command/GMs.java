@@ -30,12 +30,12 @@ public class GMs extends LongCommandAdapter {
         switch (args.get(0).toLowerCase()) {
             case "set":
                 checkArgs(args, 3);
-                set(event.getGuild(), getId(args.get(1)), args.get(2));
+                set(event.getGuild(), GameMasters.getId(args.get(1)), args.get(2));
                 ok(event);
                 break;
             case "rm":
                 checkArgs(args, 2);
-                GameMasters.removeGm(getId(args.get(1)));
+                GameMasters.removeGm(args.get(1));
                 ok(event);
                 break;
             case "list":
@@ -44,8 +44,10 @@ public class GMs extends LongCommandAdapter {
                         Messages.addTimestamp(Messages.gmList(
                                 GameMasters.retrieve(),
                                 event.getGuild(),
-                                input.hasOpt("l"),
-                                input.hasOpt("s")
+                                input.hasOpt("s"),
+                                input.hasOpt("n"),
+                                input.hasOpt("a"),
+                                input.hasOpt("o")
                         ))).queue();
                 break;
             default: throw new UserInvalidArgumentException(STR.getString("comm.gms.err.firstarg"));
@@ -57,10 +59,6 @@ public class GMs extends LongCommandAdapter {
                 .setColor(Color.GREEN)
                 .setDescription(":white_check_mark:")
                 .build()).queue();
-    }
-
-    private long getId(String raw) {
-        return Long.parseLong(raw.substring(raw.matches("<@\\d+>") ? 2 : 3, raw.length() - 1));
     }
 
     private void set(Guild guild, long id, String steamid64) {
@@ -76,7 +74,8 @@ public class GMs extends LongCommandAdapter {
     private static void checkArgs(ArrayList<String> args, int needed) {
         if (args.size() < needed)
             throw new UserInvalidArgumentException(STR.getString("err.incargs"));
-        if (!args.get(1).matches("<@!?\\d+>"))
+        if (!args.get(1).matches("<@!?\\d+>")
+                && !(args.get(0).equalsIgnoreCase("rm") && args.get(1).matches("\\d+")))
             throw new UserInvalidArgumentException(STR.getString("comm.gms.err.secarg"));
     }
 
@@ -91,8 +90,11 @@ public class GMs extends LongCommandAdapter {
     }
 
     @Override
-    public String getExample() {
-        return "gm [-ls] (set|get|rm) [@user steamid64]";
+    public String getSynopsis() {
+        return  "gm [-snao] set|get|list|rm ...\n" +
+                "gm set <@user> <steamid64>\n" +
+                "gm [-snao] get|list\n" +
+                "gm rm <@user>|<steamid64>";
     }
 
     @Override

@@ -50,7 +50,7 @@ public class Say extends CommandAdapter {
     }
 
     @Override
-    public String getExample() {
+    public String getSynopsis() {
         return "say <channelID> <any text>";
     }
 

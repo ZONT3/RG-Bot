@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import ru.zont.rgdsb.listeners.StatusMain;
 
 import java.awt.*;
-import java.sql.*;
+import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalTime;
@@ -133,63 +133,62 @@ public class Messages {
     }
 
     public static MessageEmbed gmList(List<GameMasters.GM> gms, Guild guild) {
-        return gmList(gms, guild, false, false);
+        return gmList(gms, guild, false, true, true, true);
     }
 
-    public static MessageEmbed gmList(List<GameMasters.GM> gms, Guild guild, boolean less, boolean steamid) {
+    public static MessageEmbed gmList(List<GameMasters.GM> gms, Guild guild,
+                                      boolean s, boolean n, boolean a, boolean o) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle(STR.getString("comm.gms.get.title"));
         for (GameMasters.GM gm: gms) {
             Date lastLogin = GameMasters.getLastLogin(gm.steamid64);
             gm.lastlogin = lastLogin != null ? lastLogin.getTime() : 0;
+
+            if (gm.armaname == null) gm.armaname = STR.getString("comm.gms.get.unknown");
+            else if (gm.armaname.matches("\".+\""))
+                gm.armaname = gm.armaname.substring(1, gm.armaname.length() - 1);
         }
 
-        gms.sort(Comparator.comparingLong(o -> o.lastlogin));
+        gms.sort(Comparator.comparingLong(ob -> ob.lastlogin));
 
         for (GameMasters.GM gm: gms) {
             Member member = guild.getMemberById(gm.userid);
-            String memberStr = member != null ? member.getAsMention() : STR.getString("comm.gms.get.unknown");
-            Date dateAssigned = GameMasters.getAssignedDate(gm.userid);
+            String memberMention = member != null ?
+                    member.getAsMention() : STR.getString("comm.gms.get.unknown.person");
+            StringBuilder field = new StringBuilder(memberMention).append('\n');
 
-            String online, assigned;
-            boolean bold = false;
+            if (s) field.append(String.format(STR.getString("comm.gms.get.steamid"), gm.steamid64)).append("\n");
+            if (n) field.append(String.format(STR.getString("comm.gms.get.armaname"), gm.armaname)).append("\n");
+            if (a) field.append(String.format(STR.getString("comm.gms.get.assigned"), getAssigned(gm))).append("\n");
+            if (o) field.append(getOnline(gm)).append("\n");
 
-            if (gm.lastlogin > 1) {
-                long diff = (System.currentTimeMillis() - gm.lastlogin) / 1000 / 60;
-                if (diff >= 1) {
-                    bold = (diff / 60 / 24) > 0;
-                    String was = String.format(STR.getString("comm.gms.get.lastlogin.d"), diff / 60 / 24, diff / 60 % 24);
-                    if (diff < 60) was = STR.getString("comm.gms.get.lastlogin.j");
-                    online = String.format(STR.getString("comm.gms.get.lastlogin"), was);
-                } else online = STR.getString("comm.gms.get.lastlogin.n");
-            } else online = STR.getString("comm.gms.get.lastlogin.unk");
-
-            assigned = String.format(STR.getString("comm.gms.get.assigned"), (
-                    dateAssigned != null
-                    ? new SimpleDateFormat("dd.MM.yyyy HH:mm").format(dateAssigned)
-                    : STR.getString("comm.gms.get.assigned.l") ));
-
-            String armaName = String.format(STR.getString("comm.gms.get.armaname"), GameMasters.getArmaName(gm.steamid64));
-            String steamidStr = String.format("SteamID64: `%s`", gm.steamid64);
-            builder.appendDescription(field(memberStr, armaName, assigned, online, steamidStr, bold, less, steamid));
+            if (s || n || a || o) field.append('\n');
+            builder.appendDescription(field.toString());
         }
         return builder.setColor(0x9900ff).build();
     }
 
-    private static String field(String memberStr, String armaName, String assigned, String online, String steamidStr, boolean bold, boolean less, boolean steamid) {
-        StringBuilder builder = new StringBuilder(memberStr);
-        if (steamid)
-            builder.append('\n').append(steamidStr);
-        if (!less) {
-            builder.append('\n')
-                    .append(armaName)
-                    .append('\n')
-                    .append(assigned)
-                    .append('\n')
-                    .append(online)
-                    .append(bold ? " :anger:" : "")
-                    .append('\n');
-        }
-        return builder.append('\n').toString();
+    private static String getAssigned(GameMasters.GM gm) {
+        Date assignedDate = GameMasters.getAssignedDate(gm.userid);
+        if (assignedDate == null) STR.getString("comm.gms.get.unknown");
+        return new SimpleDateFormat("dd.MM.yyyy HH:mm").format(assignedDate);
+    }
+
+    private static String getOnline(GameMasters.GM gm) {
+        long lastLogin = gm.lastlogin;
+        if (lastLogin == 0) return STR.getString("comm.gms.get.lastlogin.unk");
+
+        long diff = System.currentTimeMillis() - lastLogin;
+        long min = diff / 1000 / 60;
+        long hr  = min / 60;
+        long day = hr / 24;
+
+        String emo;
+        if (hr > 18) emo = " :anger:";
+        else if (hr > 11) emo = " :zzz:";
+        else emo = "";
+
+        if (min < 2) return STR.getString("comm.gms.get.lastlogin.n");
+        else return String.format(STR.getString("comm.gms.get.lastlogin"), day, hr % 24, min % 60) + emo;
     }
 }

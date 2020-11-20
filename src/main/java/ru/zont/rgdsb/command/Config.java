@@ -143,8 +143,8 @@ public class Config extends CommandAdapter {
     }
 
     @Override
-    public String getExample() {
-        return "config (get|set) [command [key [value]]]";
+    public String getSynopsis() {
+        return "config get|set [command [key [value]]]";
     }
 
     @Override
