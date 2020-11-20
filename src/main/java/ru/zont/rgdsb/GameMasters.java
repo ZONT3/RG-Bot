@@ -46,14 +46,19 @@ public class GameMasters {
         }
     }
 
-    public static void removeGm(String id) {
+    public static void removeGm(String id) throws NoUpdateException {
         try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
              Statement st = connection.createStatement()) {
+
+            int res = -2;
             if (id.matches("<@!?\\d+>"))
-                st.executeUpdate("DELETE FROM game_masters WHERE id_discord="+ getId(id));
+                res = st.executeUpdate("DELETE FROM game_masters WHERE id_discord="+ getId(id));
             else if (id.matches("\\d+"))
-                st.executeUpdate("DELETE FROM game_masters WHERE id_steam64='\"" + id + "\"'");
+                res = st.executeUpdate("DELETE FROM game_masters WHERE id_steam64='\"" + id + "\"'");
             else throw new RuntimeException("Invalid discord raw mention or steamid64");
+
+            if (res <= 0)
+                throw new NoUpdateException(res);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -124,5 +129,11 @@ public class GameMasters {
         public String dsname;
         public String armaname;
         public long lastlogin;
+    }
+
+    public static class NoUpdateException extends Exception {
+        public NoUpdateException(int code) {
+            super("Error code " + code);
+        }
     }
 }

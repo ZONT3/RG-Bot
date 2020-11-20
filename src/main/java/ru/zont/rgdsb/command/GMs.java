@@ -35,7 +35,12 @@ public class GMs extends LongCommandAdapter {
                 break;
             case "rm":
                 checkArgs(args, 2);
-                GameMasters.removeGm(args.get(1));
+                try {
+                    GameMasters.removeGm(args.get(1));
+                } catch (GameMasters.NoUpdateException e) {
+                    Messages.printError(event.getChannel(), STR.getString("err.general"), STR.getString("comm.gms.err.nogm"));
+                    return;
+                }
                 ok(event);
                 break;
             case "list":
