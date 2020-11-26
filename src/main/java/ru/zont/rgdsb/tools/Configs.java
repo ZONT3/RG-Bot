@@ -74,6 +74,7 @@ public class Configs {
             setProperty("CHANNEL_PLAYERS", "0");
             setProperty("CHANNEL_STATUS", "0");
             setProperty("command_prefix", "//");
+            setProperty("TA_IDS", "331524458806247426");
         }};
     }
 
@@ -115,6 +116,10 @@ public class Configs {
 
     public static String getPrefix() {
         return getGlobalProps().getProperty("command_prefix");
+    }
+
+    public static boolean isTechAdmin(String id) {
+        return getGlobalProps().getProperty("TA_IDS").contains(id);
     }
 
     public static class IdNotProvidedException extends RuntimeException {

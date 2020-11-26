@@ -58,4 +58,9 @@ public class Say extends CommandAdapter {
     public String getDescription() {
         return "";
     }
+
+    @Override
+    public boolean checkPermission(MessageReceivedEvent event) {
+        return false;
+    }
 }

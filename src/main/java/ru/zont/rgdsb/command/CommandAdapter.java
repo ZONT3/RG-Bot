@@ -11,15 +11,15 @@ public abstract class CommandAdapter {
     private Properties propertiesCache = null;
     private long propertiesCacheTS = 0;
 
-    public abstract String getCommandName();
-
-    protected abstract Properties getPropsDefaults();
-
     public abstract void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException;
+
+    public abstract String getCommandName();
 
     public abstract String getSynopsis();
 
     public abstract String getDescription();
+
+    protected abstract Properties getPropsDefaults();
 
     public boolean checkPermission(MessageReceivedEvent event) { return true; }
 
@@ -83,7 +83,7 @@ public abstract class CommandAdapter {
             return;
         }
 
-        boolean permission = adapter.checkPermission(event);
+        boolean permission = adapter.checkPermission(event) || Configs.isTechAdmin(event.getAuthor().getId());
         if (!permission && event.getMember() == null) {
             Messages.printError(event.getChannel(), Strings.STR.getString("err.unknown_perm.title"), Strings.STR.getString("err.unknown_perm"));
             return;

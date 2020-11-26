@@ -12,6 +12,7 @@ import ru.zont.rgdsb.tools.LOG;
 import ru.zont.rgdsb.tools.Messages;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -128,7 +129,12 @@ public class Config extends CommandAdapter {
     @Override
     public boolean checkPermission(MessageReceivedEvent event) {
         Member member = event.getMember();
-        return member != null && member.hasPermission(Permission.ADMINISTRATOR);
+        if (member == null) return false;
+        ArrayList<String> args = Commands.parseInput(this, event).getArgs();
+        String arg1 = args.size() > 0 ? args.get(0) : null;
+        String arg3 = args.size() > 2 ? args.get(2) : null;
+        if ("set".equalsIgnoreCase(arg1) && "TA_IDS".equalsIgnoreCase(arg3)) return false;
+        return member.hasPermission(Permission.ADMINISTRATOR);
     }
 
     private void throwUnknownComm(String command) {
