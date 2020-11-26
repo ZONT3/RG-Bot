@@ -143,18 +143,18 @@ public class Messages {
 
         int splitIndex = gms.size() - 8;
         if (splitIndex > 0) {
-            int sleep = 0, anger = 0;
+            int sleep = 0, anger = 0, warn = 0;
             for (GameMasters.GM gm: gms.subList(0, splitIndex)) {
                 long lastLogin = gm.lastlogin;
-                if (lastLogin == 0) continue;
                 switch (getEmo((System.currentTimeMillis() - lastLogin) / 1000 / 60 / 60)) {
                     case " :anger:": anger++; break;
                     case " :zzz:": sleep++; break;
+                    case " :octagonal_sign:": warn++; break;
                 }
             }
             builder.appendDescription(String.format(
                     STR.getString("status.gms.short.info"),
-                    Strings.countGMs(splitIndex), sleep, anger, Configs.getPrefix()));
+                    Strings.countGMs(splitIndex), sleep, anger, warn, Configs.getPrefix()));
             builder.appendDescription("\n\n");
         }
 
@@ -227,7 +227,8 @@ public class Messages {
     }
 
     private static String getEmo(long hr) {
-        if (hr > 18) return " :anger:";
+        if (hr > 47) return " :octagonal_sign:";
+        else if (hr > 18) return " :anger:";
         else if (hr > 11) return  " :zzz:";
         else return "";
     }
