@@ -154,7 +154,7 @@ public class Messages {
             }
             builder.appendDescription(String.format(
                     STR.getString("status.gms.short.info"),
-                    splitIndex, sleep, anger, Configs.getPrefix()));
+                    Strings.countGMs(splitIndex), sleep, anger, Configs.getPrefix()));
             builder.appendDescription("\n\n");
         }
 
