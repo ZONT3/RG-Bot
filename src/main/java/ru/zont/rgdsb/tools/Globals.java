@@ -1,11 +1,11 @@
-package ru.zont.rgdsb;
+package ru.zont.rgdsb.tools;
 
 import ru.zont.rgdsb.command.CommandAdapter;
 import ru.zont.rgdsb.listeners.LPlayersMonitoring;
 import ru.zont.rgdsb.listeners.LServerStatus;
 
 public class Globals {
-    public static final String version = "1.6.5";
+    public static final String version = "1.7.0";
 
     public static String dbConnection = "";
 

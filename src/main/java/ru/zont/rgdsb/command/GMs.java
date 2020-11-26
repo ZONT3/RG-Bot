@@ -7,13 +7,13 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.rgdsb.*;
-import ru.zont.rgdsb.Commands.Input;
+import ru.zont.rgdsb.tools.*;
+import ru.zont.rgdsb.tools.Commands.Input;
 
 import java.util.ArrayList;
 import java.util.Properties;
 
-import static ru.zont.rgdsb.Strings.STR;
+import static ru.zont.rgdsb.tools.Strings.STR;
 
 public class GMs extends LongCommandAdapter {
     public GMs() throws RegisterException {
@@ -44,15 +44,16 @@ public class GMs extends LongCommandAdapter {
                 break;
             case "list":
             case "get":
-                event.getChannel().sendMessage(
-                        Messages.addTimestamp(Messages.gmList(
+                Messages.sendSplit(
+                        event.getChannel(),
+                        Messages.gmList(
                                 GameMasters.retrieve(),
                                 event.getGuild(),
                                 input.hasOpt("s"),
                                 input.hasOpt("n"),
                                 input.hasOpt("a"),
-                                input.hasOpt("o")
-                        ))).queue();
+                                input.hasOpt("o") ),
+                        true );
                 break;
             default: throw new UserInvalidArgumentException(STR.getString("comm.gms.err.firstarg"));
         }
@@ -131,7 +132,7 @@ public class GMs extends LongCommandAdapter {
         Member member = event.getMember();
         if (member == null) return false;
         if (member.hasPermission(Permission.ADMINISTRATOR)) return true;
-        String gmmID = PropertiesTools.getRoleGmmID();
+        String gmmID = Configs.getRoleGmmID();
         Role gmm = member.getGuild().getRoleById(gmmID);
         if (gmm == null) throw new RuntimeException("Role GMM not provided");
         for (Role role: member.getRoles())

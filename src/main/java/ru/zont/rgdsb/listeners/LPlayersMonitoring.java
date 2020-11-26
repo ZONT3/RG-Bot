@@ -7,9 +7,9 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import ru.zont.rgdsb.LOG;
-import ru.zont.rgdsb.PropertiesTools;
-import ru.zont.rgdsb.Strings;
+import ru.zont.rgdsb.tools.LOG;
+import ru.zont.rgdsb.tools.Configs;
+import ru.zont.rgdsb.tools.Strings;
 
 import javax.annotation.Nonnull;
 
@@ -28,7 +28,7 @@ public class LPlayersMonitoring extends ListenerAdapter {
         if (!ready) return;
         event.getGuild().loadMembers().onSuccess(members -> {
             for (Role role: event.getRoles())
-                if (role.getId().equals(PropertiesTools.getRolePlayerID())) {
+                if (role.getId().equals(Configs.getRolePlayerID())) {
                     displayPlayersTotal(role.getGuild());
                     return;
                 }
@@ -39,14 +39,14 @@ public class LPlayersMonitoring extends ListenerAdapter {
     public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {
         if (!ready) return;
         for (Role role: event.getRoles())
-            if (role.getId().equals(PropertiesTools.getRolePlayerID())) {
+            if (role.getId().equals(Configs.getRolePlayerID())) {
                 displayPlayersTotal(role.getGuild());
                 return;
             }
     }
 
     private static void displayPlayersTotal(Guild guild) {
-        displayMembersWithRole(guild, guild.getRoleById(PropertiesTools.getRolePlayerID()), PropertiesTools.getChannelPlayersID(), Strings.STR.getString("plmon.players"));
+        displayMembersWithRole(guild, guild.getRoleById(Configs.getRolePlayerID()), Configs.getChannelPlayersID(), Strings.STR.getString("plmon.players"));
     }
 
     private static void displayMembersWithRole(Guild guild, Role role, String channelId, String formattedDisplay) {

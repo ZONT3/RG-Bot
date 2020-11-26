@@ -5,14 +5,14 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.rgdsb.Globals;
-import ru.zont.rgdsb.Messages;
-import ru.zont.rgdsb.PropertiesTools;
+import ru.zont.rgdsb.tools.Globals;
+import ru.zont.rgdsb.tools.Messages;
+import ru.zont.rgdsb.tools.Configs;
 import ru.zont.rgdsb.listeners.StatusMain;
 
 import java.util.Properties;
 
-import static ru.zont.rgdsb.Strings.STR;
+import static ru.zont.rgdsb.tools.Strings.STR;
 
 public class Status extends CommandAdapter {
     public Status() throws RegisterException {
@@ -33,7 +33,7 @@ public class Status extends CommandAdapter {
     public void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException {
         Role gm = null;
         try {
-            gm = event.getGuild().getRoleById(PropertiesTools.getRoleGmID());
+            gm = event.getGuild().getRoleById(Configs.getRoleGmID());
         } catch (Exception ignored) { }
         String gmMention = STR.getString("comm.status.gm_mention_pc");
         if (gm != null)

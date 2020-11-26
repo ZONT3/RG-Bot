@@ -3,16 +3,16 @@ package ru.zont.rgdsb.command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.rgdsb.Commands;
-import ru.zont.rgdsb.Globals;
-import ru.zont.rgdsb.Messages;
-import ru.zont.rgdsb.PropertiesTools;
+import ru.zont.rgdsb.tools.Commands;
+import ru.zont.rgdsb.tools.Globals;
+import ru.zont.rgdsb.tools.Messages;
+import ru.zont.rgdsb.tools.Configs;
 
 import java.awt.*;
 import java.util.Map;
 import java.util.Properties;
 
-import static ru.zont.rgdsb.Strings.STR;
+import static ru.zont.rgdsb.tools.Strings.STR;
 
 public class Help extends CommandAdapter {
     public Help() throws RegisterException {
@@ -47,7 +47,7 @@ public class Help extends CommandAdapter {
                 builder.addField(
                         e.getKey(),
                         String.format("`%s%s`: %s",
-                                event.getMember() != null ? PropertiesTools.getPrefix() : "",
+                                event.getMember() != null ? Configs.getPrefix() : "",
                                 getFirstSynopsis(command.getSynopsis()),
                                 command.getDescription().substring(0, Math.min(90, command.getDescription().length()))
                                         + (command.getDescription().length() > 90 ? "..." : "")),
@@ -60,7 +60,7 @@ public class Help extends CommandAdapter {
                     new EmbedBuilder()
                             .setTitle(comm.getCommandName())
                             .addField(STR.getString("comm.help.entry.example"), formatSynopsis(comm.getSynopsis(),
-                                    event.getMember() == null ? "" : PropertiesTools.getPrefix()), false)
+                                    event.getMember() == null ? "" : Configs.getPrefix()), false)
                             .addField(STR.getString("comm.help.entry.desc"), comm.getDescription(), false)
                             .setColor(Color.LIGHT_GRAY)
                             .build()

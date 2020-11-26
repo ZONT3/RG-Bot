@@ -1,4 +1,6 @@
-package ru.zont.rgdsb;
+package ru.zont.rgdsb.tools;
+
+import ru.zont.rgdsb.UTF8Control;
 
 import java.util.ResourceBundle;
 

@@ -6,10 +6,10 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
-import ru.zont.rgdsb.Globals;
-import ru.zont.rgdsb.Messages;
-import ru.zont.rgdsb.PropertiesTools;
-import ru.zont.rgdsb.Strings;
+import ru.zont.rgdsb.tools.Globals;
+import ru.zont.rgdsb.tools.Messages;
+import ru.zont.rgdsb.tools.Configs;
+import ru.zont.rgdsb.tools.Strings;
 
 import java.sql.*;
 import java.util.List;
@@ -29,9 +29,9 @@ public class StatusMain extends ServerStatusEntry {
                 Activity.watching(
                         String.format(Strings.STR.getString("status.main.status"),
                                 struct.count,
-                                PropertiesTools.getPrefix() )));
+                                Configs.getPrefix() )));
 
-        Role roleGM = entryMessage.getGuild().getRoleById(PropertiesTools.getRoleGmID());
+        Role roleGM = entryMessage.getGuild().getRoleById(Configs.getRoleGmID());
         entryMessage.editMessage(Messages.status(struct, roleGM != null ? roleGM.getAsMention() : "GM")).queue();
     }
 

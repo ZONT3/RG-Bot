@@ -1,4 +1,4 @@
-package ru.zont.rgdsb;
+package ru.zont.rgdsb.tools;
 
 /*BEGIN_COPYRIGHT_BLOCK
  *

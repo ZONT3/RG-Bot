@@ -6,14 +6,17 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.rgdsb.*;
+import ru.zont.rgdsb.tools.Commands;
+import ru.zont.rgdsb.tools.Configs;
+import ru.zont.rgdsb.tools.LOG;
+import ru.zont.rgdsb.tools.Messages;
 
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static ru.zont.rgdsb.Strings.STR;
+import static ru.zont.rgdsb.tools.Strings.STR;
 
 public class Config extends CommandAdapter {
     public Config() throws RegisterException {
@@ -51,7 +54,7 @@ public class Config extends CommandAdapter {
 
             builder.addField(
                     STR.getString("comm.config.get.global"),
-                    parseProps(PropertiesTools.getGlobalProps()),
+                    parseProps(Configs.getGlobalProps()),
                     false );
 
             HashMap<String, CommandAdapter> comms = Commands.getAllCommands();
@@ -66,7 +69,7 @@ public class Config extends CommandAdapter {
                 throwUnknownComm(args[1]);
 
             String commandName = comm != null ? comm.getCommandName() : STR.getString("comm.config.get.global");
-            Properties props = comm != null ? comm.getProps() : PropertiesTools.getGlobalProps();
+            Properties props = comm != null ? comm.getProps() : Configs.getGlobalProps();
 
             EmbedBuilder builder = new EmbedBuilder();
             builder.setTitle(commandName);
@@ -78,7 +81,7 @@ public class Config extends CommandAdapter {
                 throwUnknownComm(args[1]);
 
             String commandName = comm != null ? comm.getCommandName() : STR.getString("comm.config.get.global");
-            Properties props = comm != null ? comm.getProps() : PropertiesTools.getGlobalProps();
+            Properties props = comm != null ? comm.getProps() : Configs.getGlobalProps();
 
             EmbedBuilder builder = new EmbedBuilder();
             builder.setTitle(commandName + "." + args[2]);
@@ -105,9 +108,9 @@ public class Config extends CommandAdapter {
         if (command.toLowerCase().equals("global")) {
             LOG.d("Modifying global config: k=%s v=%s", key, value);
 
-            Properties props = PropertiesTools.getGlobalProps();
+            Properties props = Configs.getGlobalProps();
             props.setProperty(key, value);
-            PropertiesTools.storeGlobalProps(props);
+            Configs.storeGlobalProps(props);
         } else {
             CommandAdapter comm = Commands.forName(command);
             if (comm == null)

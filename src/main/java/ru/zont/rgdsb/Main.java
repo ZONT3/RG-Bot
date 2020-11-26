@@ -16,6 +16,10 @@ import org.reflections.util.FilterBuilder;
 import ru.zont.rgdsb.command.CommandAdapter;
 import ru.zont.rgdsb.listeners.LPlayersMonitoring;
 import ru.zont.rgdsb.listeners.LServerStatus;
+import ru.zont.rgdsb.tools.Configs;
+import ru.zont.rgdsb.tools.Globals;
+import ru.zont.rgdsb.tools.Messages;
+import ru.zont.rgdsb.tools.Strings;
 
 import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
@@ -27,7 +31,7 @@ public class Main extends ListenerAdapter {
     public static void main(String[] args) throws LoginException, InterruptedException {
         Globals.commandAdapters = registerInteracts();
 
-        PropertiesTools.writeDefaultGlobalProps();
+        Configs.writeDefaultGlobalProps();
 
         if (args.length < 2) throw new LoginException("API token and/or DB connection not provided!");
         Globals.dbConnection = args[1];
@@ -59,11 +63,11 @@ public class Main extends ListenerAdapter {
     }
 
     private static CommandAdapter[] registerInteracts() {
-        if (PropertiesTools.DIR_PROPS.exists() && !PropertiesTools.DIR_PROPS.isDirectory())
-            if (!PropertiesTools.DIR_PROPS.delete())
+        if (Configs.DIR_PROPS.exists() && !Configs.DIR_PROPS.isDirectory())
+            if (!Configs.DIR_PROPS.delete())
                 throw new RuntimeException("Cannot remove file named as dir 'properties'");
-        if (!PropertiesTools.DIR_PROPS.exists())
-            if (!PropertiesTools.DIR_PROPS.mkdir())
+        if (!Configs.DIR_PROPS.exists())
+            if (!Configs.DIR_PROPS.mkdir())
                 throw new RuntimeException("Cannot create properties dir");
 
         List<ClassLoader> classLoadersList = new LinkedList<>();

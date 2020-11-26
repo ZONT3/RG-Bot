@@ -1,4 +1,4 @@
-package ru.zont.rgdsb;
+package ru.zont.rgdsb.tools;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import ru.zont.rgdsb.command.CommandAdapter;
@@ -18,10 +18,10 @@ public class Commands {
 
     public static String parseInputRaw(CommandAdapter adapter, MessageReceivedEvent event) {
         String msg = event.getMessage().getContentRaw();
-        if (!msg.startsWith(PropertiesTools.getPrefix() + adapter.getCommandName()) && !msg.startsWith(adapter.getCommandName()))
+        if (!msg.startsWith(Configs.getPrefix() + adapter.getCommandName()) && !msg.startsWith(adapter.getCommandName()))
             throw new IllegalStateException("Provided event does not contain a command request");
-        if (msg.startsWith(PropertiesTools.getPrefix()))
-            msg = msg.replaceFirst(PropertiesTools.getPrefix() + adapter.getCommandName(), "");
+        if (msg.startsWith(Configs.getPrefix()))
+            msg = msg.replaceFirst(Configs.getPrefix() + adapter.getCommandName(), "");
         else msg = msg.replaceFirst(adapter.getCommandName(), "");
         return msg.trim();
     }

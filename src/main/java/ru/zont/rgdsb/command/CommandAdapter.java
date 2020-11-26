@@ -2,7 +2,7 @@ package ru.zont.rgdsb.command;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.rgdsb.*;
+import ru.zont.rgdsb.tools.*;
 
 import java.io.File;
 import java.util.Properties;
@@ -39,24 +39,24 @@ public abstract class CommandAdapter {
 
     public Properties getProps() {
         long current = System.currentTimeMillis();
-        if (propertiesCache != null && current - propertiesCacheTS <= PropertiesTools.CACHE_LIFETIME)
+        if (propertiesCache != null && current - propertiesCacheTS <= Configs.CACHE_LIFETIME)
             return propertiesCache;
 
-        Properties props = PropertiesTools.getProps(getCommandName(), getPropsDefaults());
+        Properties props = Configs.getProps(getCommandName(), getPropsDefaults());
         propertiesCache = props;
         propertiesCacheTS = current;
         return props;
     }
 
     public void storeProps(Properties properties) {
-        PropertiesTools.storeProps(getCommandName(), properties);
+        Configs.storeProps(getCommandName(), properties);
         propertiesCache = properties;
         propertiesCacheTS = System.currentTimeMillis();
     }
 
     public static void onMessageReceived(@NotNull MessageReceivedEvent event, CommandAdapter[] adapters) {
         if (event.getAuthor().isBot()) return;
-        String prefix = PropertiesTools.getPrefix();
+        String prefix = Configs.getPrefix();
         String content = event.getMessage().getContentStripped();
         boolean inGuild = event.getChannelType().isGuild();
         if (inGuild && !content.startsWith(prefix))
@@ -107,8 +107,8 @@ public abstract class CommandAdapter {
 
     private void writeDefaultProps() {
         String name = getCommandName();
-        if (!new File(PropertiesTools.DIR_PROPS, name + ".properties").exists())
-            PropertiesTools.storeProps(name, getPropsDefaults());
+        if (!new File(Configs.DIR_PROPS, name + ".properties").exists())
+            Configs.storeProps(name, getPropsDefaults());
     }
 
     protected static class RegisterException extends Exception {

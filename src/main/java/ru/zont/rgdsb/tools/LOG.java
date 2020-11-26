@@ -1,4 +1,4 @@
-package ru.zont.rgdsb;
+package ru.zont.rgdsb.tools;
 
 import java.io.BufferedWriter;
 import java.io.File;

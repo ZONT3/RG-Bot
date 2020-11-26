@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.rgdsb.PropertiesTools;
+import ru.zont.rgdsb.tools.Configs;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ru.zont.rgdsb.Strings.STR;
+import static ru.zont.rgdsb.tools.Strings.STR;
 
 public class LServerStatus extends ListenerAdapter {
     private List<ServerStatusEntry> entryList;
@@ -44,7 +44,7 @@ public class LServerStatus extends ListenerAdapter {
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
         TextChannel channel = null;
-        String channelStatusID = PropertiesTools.getChannelStatusID();
+        String channelStatusID = Configs.getChannelStatusID();
         for (Guild guild: event.getJDA().getGuilds()) {
             channel = guild.getTextChannelById(channelStatusID);
             if (channel != null) break;

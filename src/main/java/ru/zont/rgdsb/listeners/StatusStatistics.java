@@ -3,8 +3,8 @@ package ru.zont.rgdsb.listeners;
 import javafx.util.Pair;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import ru.zont.rgdsb.Globals;
-import ru.zont.rgdsb.Messages;
+import ru.zont.rgdsb.tools.Globals;
+import ru.zont.rgdsb.tools.Messages;
 
 import java.sql.*;
 

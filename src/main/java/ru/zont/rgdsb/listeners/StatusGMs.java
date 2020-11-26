@@ -4,13 +4,13 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import ru.zont.rgdsb.GameMasters;
-import ru.zont.rgdsb.Messages;
+import ru.zont.rgdsb.tools.GameMasters;
+import ru.zont.rgdsb.tools.Messages;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.zont.rgdsb.Strings.STR;
+import static ru.zont.rgdsb.tools.Strings.STR;
 
 public class StatusGMs extends ServerStatusEntry {
     @Override

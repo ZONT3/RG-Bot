@@ -1,9 +1,9 @@
-package ru.zont.rgdsb;
+package ru.zont.rgdsb.tools;
 
 import java.sql.*;
 import java.util.ArrayList;
 
-import static ru.zont.rgdsb.Strings.STR;
+import static ru.zont.rgdsb.tools.Strings.STR;
 
 public class GameMasters {
     public static ArrayList<GM> retrieve() {

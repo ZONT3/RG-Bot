@@ -1,4 +1,4 @@
-package ru.zont.rgdsb;
+package ru.zont.rgdsb.tools;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -6,7 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-public class PropertiesTools {
+public class Configs {
     public static final File DIR_PROPS = new File("properties");
     private static final String PROPS_COMMENT = "Properties of Right Games project's DS Bot Command";
     public static final int CACHE_LIFETIME = 20000;
