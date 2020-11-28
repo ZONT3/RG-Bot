@@ -16,12 +16,12 @@ public class Strings {
     }
 
     public static String getPlural(int count, String one, String few, String other) {
-        int ccount =(count % 100);
+        int c = (count % 100);
 
-        if (ccount == 1 || (ccount > 20 && ccount % 10 == 1))
+        if (c == 1 || (c > 20 && c % 10 == 1))
             return String.format(one, count);
-       if ((ccount < 10 || ccount > 20) && ccount % 10 >= 2 && ccount % 10 <= 4)
+        if ((c < 10 || c > 20) && c % 10 >= 2 && c % 10 <= 4)
             return String.format(few, count);
-       return String.format(other, count);
+        return String.format(other, count);
     }
 }
