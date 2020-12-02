@@ -6,14 +6,13 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
+import ru.zont.rgdsb.tools.Configs;
 import ru.zont.rgdsb.tools.Globals;
 import ru.zont.rgdsb.tools.Messages;
-import ru.zont.rgdsb.tools.Configs;
 import ru.zont.rgdsb.tools.Strings;
 
 import java.sql.*;
 import java.util.List;
-import java.util.Random;
 
 public class StatusMain extends ServerStatusEntry {
 
@@ -24,7 +23,6 @@ public class StatusMain extends ServerStatusEntry {
 
     @Override
     void update(Message entryMessage) {
-        if (new Random().nextBoolean()) throw new IllegalStateException("Test \u0445\u0443\u0439\u043D\u0438");
         ServerInfoStruct struct = retrieveServerInfo();
 
         entryMessage.getJDA().getPresence().setActivity(
