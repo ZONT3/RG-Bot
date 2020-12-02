@@ -58,7 +58,7 @@ public class StatusMain extends ServerStatusEntry {
             short count = a.getShort("s_players_count");
             long updated = a.getTimestamp("s_updated").getTime();
             long servertime = a.getLong("s_servertime");
-            String gms = a.getString("s_gms");
+            String gms = a.getString("s_gms").replaceAll("\"", "");
 
             if (record < count) commitRecord(st, record);
 
