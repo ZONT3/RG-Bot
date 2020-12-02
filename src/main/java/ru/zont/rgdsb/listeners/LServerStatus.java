@@ -100,17 +100,16 @@ public class LServerStatus extends ListenerAdapter {
                 while (!Thread.interrupted()) {
                     try {
                         entry.update(message);
-                        Thread.sleep(entry.getPeriod());
-                    } catch (InterruptedException interruptedException) {
-                        break;
                     } catch (Exception e) {
                         message.editMessage(Messages.error(
                                 STR.getString("err.update_fail"),
                                 String.format("Class: %s, Exception: %s: %s",
                                         entry.getClass().getSimpleName(),
                                         e.getClass().getSimpleName(),
-                                        e.getLocalizedMessage() ))).queue();
+                                        e.getLocalizedMessage()))).queue();
                     }
+                    try { Thread.sleep(entry.getPeriod()); }
+                    catch (InterruptedException ignored) { break; }
                 }
             }, String.format("%s ServerStatus Worker", entry.getClass().getSimpleName()));
             thread.start();
