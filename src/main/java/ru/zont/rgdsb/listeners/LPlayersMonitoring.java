@@ -46,7 +46,7 @@ public class LPlayersMonitoring extends ListenerAdapter {
     }
 
     private static void displayPlayersTotal(Guild guild) {
-        displayMembersWithRole(guild, guild.getRoleById(Configs.getRolePlayerID()), Configs.getChannelPlayersID(), Strings.STR.getString("plmon.players"));
+        displayMembersWithRole(guild, guild.getRoleById(Configs.getRolePlayerID()), Configs.getChannelPlayersID(), Strings.STR.getString("player_monitoring.players"));
     }
 
     private static void displayMembersWithRole(Guild guild, Role role, String channelId, String formattedDisplay) {

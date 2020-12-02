@@ -28,11 +28,11 @@ public class Config extends CommandAdapter {
     public void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException {
         String[] args = Commands.parseArgs(this, event);
         if (args.length == 0)
-            throw new UserInvalidArgumentException(STR.getString("err.incargs"));
+            throw new UserInvalidArgumentException(STR.getString("err.incorrect_args"));
         switch (args[0].toLowerCase()) {
             case "set":
                 if (args.length < 4)
-                    throw new UserInvalidArgumentException(STR.getString("err.incargs"));
+                    throw new UserInvalidArgumentException(STR.getString("err.incorrect_args"));
                 if (args.length > 4)
                     for (int i = 4; i < args.length; i++)
                         args[3] += (" " + args[i]);
@@ -44,7 +44,7 @@ public class Config extends CommandAdapter {
                 break;
             default:
                 throw new UserInvalidArgumentException(String.format(
-                        STR.getString("comm.config.err.incmode"), args[0].toLowerCase() ));
+                        STR.getString("comm.config.err.incorrect_mode"), args[0].toLowerCase() ));
         }
     }
 
@@ -138,7 +138,7 @@ public class Config extends CommandAdapter {
     }
 
     private void throwUnknownComm(String command) {
-        throw new UserInvalidArgumentException(String.format(STR.getString("comm.config.err.unkncomm"), command), false);
+        throw new UserInvalidArgumentException(String.format(STR.getString("comm.config.err.unknown_comm"), command), false);
     }
 
     @Override

@@ -20,7 +20,7 @@ public class Say extends CommandAdapter {
         if (!event.isFromType(ChannelType.PRIVATE)) return;
         String content = event.getMessage().getContentRaw();
         String[] s = content.split(" ");
-        if (s.length < 3) throw new UserInvalidArgumentException(STR.getString("err.incargs"));
+        if (s.length < 3) throw new UserInvalidArgumentException(STR.getString("err.incorrect_args"));
         if (!s[1].matches("\\d+")) throw new UserInvalidArgumentException("First arg should be a channel ID!");
         String id = s[1];
 

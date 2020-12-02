@@ -25,7 +25,7 @@ public class GMs extends LongCommandAdapter {
         Input input = Commands.parseInput(this, event);
         ArrayList<String> args = input.getArgs();
         if (args.size() < 1)
-            throw new UserInvalidArgumentException(STR.getString("err.incargs"));
+            throw new UserInvalidArgumentException(STR.getString("err.incorrect_args"));
         switch (args.get(0).toLowerCase()) {
             case "set":
                 checkArgs(args, 3);
@@ -55,7 +55,7 @@ public class GMs extends LongCommandAdapter {
                                 input.hasOpt("o") ),
                         true );
                 break;
-            default: throw new UserInvalidArgumentException(STR.getString("comm.gms.err.firstarg"));
+            default: throw new UserInvalidArgumentException(STR.getString("comm.gms.err.first_arg"));
         }
     }
 
@@ -93,10 +93,10 @@ public class GMs extends LongCommandAdapter {
 
     private static void checkArgs(ArrayList<String> args, int needed) {
         if (args.size() < needed)
-            throw new UserInvalidArgumentException(STR.getString("err.incargs"));
+            throw new UserInvalidArgumentException(STR.getString("err.incorrect_args"));
         if (!args.get(1).matches("<@!?\\d+>")
                 && !(args.get(0).equalsIgnoreCase("rm") && args.get(1).matches("\\d+")))
-            throw new UserInvalidArgumentException(STR.getString("comm.gms.err.secarg"));
+            throw new UserInvalidArgumentException(STR.getString("comm.gms.err.second_arg"));
     }
 
     @Override

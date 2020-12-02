@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import ru.zont.rgdsb.tools.Configs;
+import ru.zont.rgdsb.tools.Messages;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class LServerStatus extends ListenerAdapter {
     private List<Thread> threadList;
     private Map<Class<? extends ServerStatusEntry>, Message> messages;
 
-    private static final HashMap<String, Class<? extends ServerStatusEntry>> titles = new HashMap<String, Class<? extends ServerStatusEntry>>() {{
+    private static final ServerStatusMap titles = new ServerStatusMap() {{
         put(STR.getString("status.main.title"), StatusMain.class);
         put(STR.getString("status.statistics.title"), StatusStatistics.class);
         put(STR.getString("comm.gms.get.title"), StatusGMs.class);
@@ -86,6 +87,7 @@ public class LServerStatus extends ListenerAdapter {
         }
     }
 
+    @SuppressWarnings("BusyWait")
     private void setup(TextChannel channel) {
         for (ServerStatusEntry entry: entryList) {
             Message message;
@@ -96,11 +98,18 @@ public class LServerStatus extends ListenerAdapter {
 
             Thread thread = new Thread(null, () -> {
                 while (!Thread.interrupted()) {
-                    entry.update(message);
                     try {
+                        entry.update(message);
                         Thread.sleep(entry.getPeriod());
                     } catch (InterruptedException interruptedException) {
                         break;
+                    } catch (Exception e) {
+                        message.editMessage(Messages.error(
+                                STR.getString("err.update_fail"),
+                                String.format("Class: %s, Exception: %s: %s",
+                                        entry.getClass().getSimpleName(),
+                                        e.getClass().getSimpleName(),
+                                        e.getLocalizedMessage() ))).queue();
                     }
                 }
             }, String.format("%s ServerStatus Worker", entry.getClass().getSimpleName()));
@@ -115,4 +124,6 @@ public class LServerStatus extends ListenerAdapter {
         for (Map.Entry<Class<? extends ServerStatusEntry>, Message> e: messages.entrySet())
             e.getValue().delete().complete();
     }
+
+    private static class ServerStatusMap extends HashMap<String, Class<? extends ServerStatusEntry>> { }
 }
