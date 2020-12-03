@@ -5,7 +5,7 @@ import ru.zont.rgdsb.listeners.LPlayersMonitoring;
 import ru.zont.rgdsb.listeners.LServerStatus;
 
 public class Globals {
-    public static final String version = "1.7.1";
+    public static final String version = "1.8.0";
 
     public static String dbConnection = "";
 
