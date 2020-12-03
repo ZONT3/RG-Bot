@@ -2,7 +2,6 @@ package ru.zont.rgdsb.command;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.rgdsb.tools.Commands;
 
 import java.util.Properties;
 
@@ -15,11 +14,7 @@ public class Exec extends CommandAdapter {
 
     @Override
     public void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException {
-        SubprocessListener listener =
-                new SubprocessListener(
-                        "cmd /c " + Commands.parseInputRaw(this, event),
-                        event.getChannel());
-        listener.start();
+
     }
 
     @Override
