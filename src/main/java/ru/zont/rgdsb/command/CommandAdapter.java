@@ -1,11 +1,15 @@
 package ru.zont.rgdsb.command;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import ru.zont.rgdsb.tools.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.util.Properties;
+
+import static ru.zont.rgdsb.tools.Strings.STR;
 
 public abstract class CommandAdapter {
     private Properties propertiesCache = null;
@@ -26,7 +30,7 @@ public abstract class CommandAdapter {
     public boolean isHidden() { return false; }
 
     protected void onInsufficientPermissions(@NotNull MessageReceivedEvent event) {
-        Messages.printError(event.getChannel(), Strings.STR.getString("err.insufficient_perm.title"), Strings.STR.getString("err.insufficient_perm"));
+        Messages.printError(event.getChannel(), STR.getString("err.insufficient_perm.title"), STR.getString("err.insufficient_perm"));
     }
 
     public CommandAdapter() throws RegisterException {
@@ -75,7 +79,7 @@ public abstract class CommandAdapter {
 
         LOG.d("Command received: '%s' from user %s", event.getMessage().getContentRaw(), event.getAuthor().getAsTag());
         if (adapter == null) {
-            Messages.printError(event.getChannel(), Strings.STR.getString("err.unknown_command.title"), String.format(Strings.STR.getString("err.unknown_command"), Globals.ZONT_MENTION));
+            Messages.printError(event.getChannel(), STR.getString("err.unknown_command.title"), String.format(STR.getString("err.unknown_command"), Globals.ZONT_MENTION));
             return;
         }
         if (event.isWebhookMessage()) {
@@ -85,7 +89,7 @@ public abstract class CommandAdapter {
 
         boolean permission = adapter.checkPermission(event) || Configs.isTechAdmin(event.getAuthor().getId());
         if (!permission && event.getMember() == null) {
-            Messages.printError(event.getChannel(), Strings.STR.getString("err.unknown_perm.title"), Strings.STR.getString("err.unknown_perm"));
+            Messages.printError(event.getChannel(), STR.getString("err.unknown_perm.title"), STR.getString("err.unknown_perm"));
             return;
         }
         if (!permission) {
@@ -98,10 +102,16 @@ public abstract class CommandAdapter {
         } catch (UserInvalidArgumentException e) {
             event.getChannel()
                     .sendMessage(Messages.error(
-                            Strings.STR.getString("err.args.title"),
+                            STR.getString("err.args.title"),
                             e.getMessage() + (e.printSyntax ? ("\n\n" +
-                                    String.format(Strings.STR.getString("err.args.syntax"), adapter.getSynopsis(), inGuild ? prefix : "", adapter.getCommandName())) : "") ))
+                                    String.format(STR.getString("err.args.syntax"), adapter.getSynopsis(), inGuild ? prefix : "", adapter.getCommandName())) : "") ))
                     .queue();
+        } catch (NotImplementedException e) {
+            event.getChannel().sendMessage(new EmbedBuilder()
+                    .setTitle(STR.getString("err.not_implemented.title"))
+                    .setDescription(STR.getString("err.not_implemented"))
+                    .setColor(0xc2185b)
+                    .build()).queue();
         }
     }
 
