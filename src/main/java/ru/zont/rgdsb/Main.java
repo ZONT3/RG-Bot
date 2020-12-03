@@ -56,7 +56,7 @@ public class Main extends ListenerAdapter {
             event.getChannel().sendMessage(
                     new EmbedBuilder( Messages.error(
                             Strings.STR.getString("err.unexpected"),
-                            String.format("%s: %s", e.getClass().getName(), e.getLocalizedMessage())))
+                            Messages.describeException(e)))
                     .setFooter(Strings.STR.getString("err.unexpected.foot"))
                     .build()).queue();
         }

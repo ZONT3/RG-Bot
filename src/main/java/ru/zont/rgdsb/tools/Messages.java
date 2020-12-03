@@ -257,4 +257,9 @@ public class Messages {
     public static void sendSplit(MessageChannel channel, List<EmbedBuilder> builders) {
         sendSplit(channel, builders, false);
     }
+
+    public static String describeException(Exception e) {
+        String localizedMessage = e.getLocalizedMessage();
+        return e.getClass().getSimpleName() + (localizedMessage == null ? "" : ": " + localizedMessage);
+    }
 }
