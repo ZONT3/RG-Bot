@@ -1,10 +1,7 @@
 package ru.zont.rgdsb.tools;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.*;
 import ru.zont.rgdsb.listeners.StatusMain;
 
 import java.awt.*;
@@ -261,5 +258,9 @@ public class Messages {
     public static String describeException(Exception e) {
         String localizedMessage = e.getLocalizedMessage();
         return e.getClass().getSimpleName() + (localizedMessage == null ? "" : ": " + localizedMessage);
+    }
+
+    public static void addOK(Message msg) {
+        msg.addReaction("\u2705").queue();
     }
 }

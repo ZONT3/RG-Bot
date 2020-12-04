@@ -1,18 +1,22 @@
 package ru.zont.rgdsb.command.exec;
 
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
+import ru.zont.rgdsb.NotImplementedException;
 import ru.zont.rgdsb.SubprocessListener;
 import ru.zont.rgdsb.command.CommandAdapter;
 import ru.zont.rgdsb.tools.Commands;
 import ru.zont.rgdsb.tools.Messages;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +24,8 @@ import java.util.regex.Pattern;
 import static ru.zont.rgdsb.tools.Strings.STR;
 
 public class Exec extends CommandAdapter {
+    private static long nextPid = 1;
+    private static final Map<Long, ExecHandler> processes = Collections.synchronizedMap(new HashMap<>());
 
     public Exec() throws RegisterException {
         super();
@@ -27,8 +33,10 @@ public class Exec extends CommandAdapter {
 
     @Override
     public void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException {
+        MessageChannel channel = event.getChannel();
+
         String input = Commands.parseInputRaw(this, event);
-        Pattern pattern = Pattern.compile("[^\\w]*```(java|python)\\n((.|\\n)+)```[^\\w]*");
+        Pattern pattern = Pattern.compile("[^\\w]*```(java|python|py)\\n((.|\\n)+)```[^\\w]*");
         Matcher matcher = pattern.matcher(input);
 
         String lineToExec;
@@ -40,8 +48,9 @@ public class Exec extends CommandAdapter {
             String code = matcher.group(2).replaceAll("\\\\`", "`");
             File tempFile;
             switch (lang) {
+                case "py":
                 case "python":
-                    name = "Py code";
+                    name = "Python code";
                     tempFile = toTemp(code);
                     lineToExec = "python -X utf8 -u \"" + tempFile.getAbsolutePath() + "\"";
                     break;
@@ -54,7 +63,6 @@ public class Exec extends CommandAdapter {
             params.onVeryFinish = param -> {
                 if (!tempFile.delete())
                     System.err.println("Cannot delete temp file!");
-                return null;
             };
         } else if (input.startsWith("--cmd ")) {
             input = input.replaceFirst("--cmd ", "");
@@ -72,8 +80,13 @@ public class Exec extends CommandAdapter {
         }
 
         if (name != null)
-            new ExecHandler(builder.build(name, lineToExec), event.getChannel(), params);
-        else Messages.printError(event.getChannel(), "Error", "Cannot handle input");
+            newHandler(builder.build(name, lineToExec), params, channel);
+        else Messages.printError(channel, "Error", "Cannot handle input");
+    }
+
+    public synchronized void newHandler(SubprocessListener sl, ExecHandler.Parameters params, MessageChannel channel) {
+        processes.put(nextPid, new ExecHandler(sl, nextPid, channel, params));
+        nextPid++;
     }
 
     private File toTemp(String code) {
@@ -86,6 +99,14 @@ public class Exec extends CommandAdapter {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    static ExecHandler findProcess(long id) {
+        return processes.getOrDefault(id, null);
+    }
+
+    public static void removeProcess(long pid) {
+        processes.remove(pid);
     }
 
     @Override

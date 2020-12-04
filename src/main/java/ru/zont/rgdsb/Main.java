@@ -29,7 +29,7 @@ import java.util.*;
 public class Main extends ListenerAdapter {
 
     public static void main(String[] args) throws LoginException, InterruptedException {
-        Globals.commandAdapters = registerInteracts();
+        Globals.commandAdapters = registerCommands();
 
         Configs.writeDefaultGlobalProps();
 
@@ -62,7 +62,7 @@ public class Main extends ListenerAdapter {
         }
     }
 
-    private static CommandAdapter[] registerInteracts() {
+    private static CommandAdapter[] registerCommands() {
         if (Configs.DIR_PROPS.exists() && !Configs.DIR_PROPS.isDirectory())
             if (!Configs.DIR_PROPS.delete())
                 throw new RuntimeException("Cannot remove file named as dir 'properties'");

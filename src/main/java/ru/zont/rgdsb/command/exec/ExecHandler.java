@@ -1,6 +1,5 @@
 package ru.zont.rgdsb.command.exec;
 
-import javafx.util.Callback;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -9,9 +8,11 @@ import org.jetbrains.annotations.NotNull;
 import ru.zont.rgdsb.SubprocessListener;
 import ru.zont.rgdsb.tools.Messages;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 class ExecHandler {
     public static final int OUT_MAX_LEN = 2000;
@@ -19,22 +20,53 @@ class ExecHandler {
     private final MessageChannel workingChannel;
     private final long started = System.currentTimeMillis();
 
+    private final long pid;
     private final String name;
     private final OutList stdoutMessages = new OutList();
     private final OutList stderrMessages = new OutList();
 
     private final Parameters params;
+    private final SubprocessListener sl;
+    private Message statusMessage;
+
     static class Parameters {
         boolean alwaysPrintExit = true;
-        Callback<Void, Void> onVeryFinish = null;
+        Consumer<Void> onVeryFinish = null;
     }
 
-    public ExecHandler(@NotNull SubprocessListener sl, @NotNull MessageChannel workingChannel, Parameters params) {
+    public ExecHandler(@NotNull SubprocessListener sl, long pid, @NotNull MessageChannel workingChannel, Parameters params) {
         this.workingChannel = workingChannel;
         this.params = params;
-        name = sl.getProcName();
-        connectSL(sl);
+        this.sl = sl;
+        this.pid = pid;
+
+        name = this.sl.getProcName();
+        connectSL(this.sl);
         sl.start();
+        printStart();
+    }
+
+    private void printStart() {
+        statusMessage = workingChannel.sendMessage(new EmbedBuilder()
+                .setTitle(String.format("Process [%d] %s started", pid, name))
+                .setColor(0xE0E0E0)
+                .setTimestamp(Instant.now())
+                .build()).complete();
+        statusMessage.addReaction("\u23F3").queue();
+    }
+
+    private void printEnd(int code) {
+        long millis = System.currentTimeMillis() - started;
+        long sec = millis / 1000;
+        workingChannel.sendMessage(new EmbedBuilder()
+                .setColor(code == 0 ? 0x00DA00 : 0x8F0000)
+                .setTitle(String.format("Process [%d] finished", pid))
+                .setDescription(String.format(
+                        "Name: %s\n" +
+                                "Duration: %d.%03ds\n" +
+                                "Exit code: `%d`",
+                        name, sec, millis % 1000, code
+                )).build()).queue();
     }
 
     private void connectSL(SubprocessListener sl) {
@@ -44,42 +76,34 @@ class ExecHandler {
         sl.setOnFinish(this::onFinish);
     }
 
-    private Void onError(Exception e) {
-        if (checkWChPrint()) return null;
+    private void onError(Exception e) {
+        if (checkWChPrint()) return;
         Messages.printError(workingChannel, "Error in SubprocessListener", Messages.describeException(e));
-        return null;
     }
 
-    private Void onFinish(int code) {
-        if (checkWChPrint()) return null;
+    private void onFinish(int code) {
+        Exec.removeProcess(pid);
+        if (params.onVeryFinish != null)
+            params.onVeryFinish.accept(null);
 
-        if (code != 0 || params.alwaysPrintExit) {
-            long millis = System.currentTimeMillis() - started;
-            long sec = millis / 1000;
-            workingChannel.sendMessage(new EmbedBuilder()
-                    .setColor(code == 0 ? 0x00DA00 : 0x8F0000)
-                    .setTitle("Process finished")
-                    .setDescription(String.format(
-                            "Duration: %d.%ds\n" +
-                                    "Exit code: `%d`",
-                            sec, millis % 1000, code
-                    )).build()).queue();
+        if (statusMessage != null) {
+            statusMessage.removeReaction("\u23F3").queue();
+            Messages.addOK(statusMessage);
         }
 
-        if (params.onVeryFinish != null)
-            params.onVeryFinish.call(null);
+        if (checkWChPrint()) return;
+        if (code != 0 || params.alwaysPrintExit) {
+            printEnd(code);
+        }
 
-        return null;
     }
 
-    private Void appendStdout(String lines) {
+    private void appendStdout(String lines) {
         appendOut(lines, stdoutMessages, "stdout");
-        return null;
     }
 
-    private Void appendStderr(String lines) {
+    private void appendStderr(String lines) {
         appendOut(lines, stderrMessages, "stderr");
-        return null;
     }
 
     private synchronized void appendOut(String lines, OutList outList, String type) {
@@ -90,7 +114,7 @@ class ExecHandler {
             MessageEmbed embed = lastOutputMsg != null ? getEmbed(lastOutputMsg.getMsg()) : null;
             String content = lastOutputMsg != null ? lastOutputMsg.getVal() : "";
             boolean first = true;
-            for (String l: safeAddLines(content + lines)) { // TODO очень странное поведение при переполнении ФИКС REQUIRED!!!
+            for (String l: safeAddLines(content + lines)) {
                 if (first && lastOutputMsg != null) {
                     lastOutputMsg.edit(l, embed);
                     first = false;
@@ -113,17 +137,17 @@ class ExecHandler {
     private List<String> safeAddLines(String lines) {
         ArrayList<String> res = new ArrayList<>();
         StringBuilder nextLines = new StringBuilder();
-        for (String line: lines.split("\n")) {
+        for (String line: lines.split("(?<=\\n)")) {
             if (nextLines.length() + line.length() <= OUT_MAX_LEN) {
-                nextLines.append(line).append("\n");
+                nextLines.append(line);
             } else {
                 List<String> list = splitString(nextLines);
-                if (list.size() == 1)
+                if (list.size() == 1) {
                     res.add(nextLines.toString());
-                else {
+                    nextLines = new StringBuilder(line);
+                } else {
                     res.addAll(list.subList(0, list.size() - 1));
-                    nextLines = new StringBuilder(list.get(list.size() - 1))
-                            .append("\n").append(line).append("\n");
+                    nextLines = new StringBuilder(list.get(list.size() - 1)).append(line);
                 }
             }
         }
@@ -140,7 +164,7 @@ class ExecHandler {
     private void sendOutput(OutList outList, String type, String lines) {
         outList.add(
                 workingChannel.sendMessage(basicOutputMsg(outList, type)
-                        .setDescription("```" + lines + "```")
+                        .setDescription("```\n" + lines + "```")
                         .build()
                 ).complete(), lines);
     }
@@ -151,7 +175,7 @@ class ExecHandler {
     }
 
     private String nextTitle(OutList outList, String type) {
-        return name + " " + type + " #" + outList.size();
+        return String.format("[%d] %s %s #%d", pid, name, type, outList.size());
     }
 
     private OutListEntry getLastOutputMsg(OutList outList) {
@@ -165,6 +189,14 @@ class ExecHandler {
             return true;
         }
         return false;
+    }
+
+    public long getPid() {
+        return pid;
+    }
+
+    public void terminate() {
+        sl.terminate();
     }
 
     private static class OutList extends ArrayList<OutListEntry> {
@@ -185,7 +217,7 @@ class ExecHandler {
         public void edit(String ns, MessageEmbed embed) {
             m.editMessage(
                     new EmbedBuilder(embed)
-                            .setDescription("```" + ns + "```")
+                            .setDescription("```\n" + ns + "```")
                             .build()
             ).complete();
             s = ns;
