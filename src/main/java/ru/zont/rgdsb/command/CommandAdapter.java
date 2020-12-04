@@ -121,7 +121,7 @@ public abstract class CommandAdapter {
             Configs.storeProps(name, getPropsDefaults());
     }
 
-    protected static class RegisterException extends Exception {
+    protected static class RegisterException extends RuntimeException {
         public RegisterException(String message) {
             super(message);
         }

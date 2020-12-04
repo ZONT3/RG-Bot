@@ -1,23 +1,43 @@
 package ru.zont.rgdsb;
 
 import javafx.util.Callback;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public class SubprocessListener extends Thread {
 
+    public static final int LISTEN_DELAY = 200;
     private final String name;
     private final String execLine;
 
-    private int exitStatus = -1;
+    private int exitStatus = -1337;
 
     private Callback<String, Void> onStdout = null;
     private Callback<String, Void> onStderr = null;
     private Callback<Integer, Void> onFinish = null;
     private Callback<Exception, Void> onError = null;
 
-    public SubprocessListener(CharSequence name, CharSequence execLine) {
+    private Charset charset = StandardCharsets.UTF_8;
+
+    public static class Builder {
+        private Charset charset;
+
+        public Builder setCharset(Charset charset) {
+            this.charset = charset;
+            return this;
+        }
+
+        public SubprocessListener build(@NotNull CharSequence name, @NotNull CharSequence execLine) {
+            SubprocessListener l = new SubprocessListener(name, execLine);
+            if (charset != null) l.charset = charset;
+            return l;
+        }
+    }
+
+    public SubprocessListener(@NotNull CharSequence name, @NotNull CharSequence execLine) {
         super("SpL: " + name);
         this.name = name.toString();
         this.execLine = execLine.toString();
@@ -25,26 +45,31 @@ public class SubprocessListener extends Thread {
 
     @Override
     public void run() {
+        Callback<Exception, Void> eCallback = e -> {
+            e.printStackTrace();
+            if (onError != null)
+                onError.call(e);
+            return null;
+        };
+
         try {
             Process process = Runtime.getRuntime().exec(execLine);
             new StreamListener(process, process.getInputStream(), line -> {
                 if (onStdout != null)
                     onStdout.call(line);
                 return null;
-            });
+            }, eCallback);
             new StreamListener(process, process.getErrorStream(), line -> {
                 if (onStderr != null)
                     onStderr.call(line);
                 return null;
-            });
+            }, eCallback);
             process.waitFor();
             exitStatus = process.exitValue();
             if (onFinish != null)
                 onFinish.call(exitStatus);
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            if (onError != null)
-                onError.call(e);
+        } catch (Exception e) {
+            eCallback.call(e);
         }
     }
 
@@ -74,37 +99,37 @@ public class SubprocessListener extends Thread {
         private final Process process;
         private final InputStream stream;
         private final Callback<String, Void> callback;
+        private final Callback<Exception, Void> eCallback;
 
-        private StreamListener(Process process, InputStream stream, Callback<String, Void> listener) {
+        private StreamListener(Process process, InputStream stream, Callback<String, Void> listener, Callback<Exception, Void> eCallback) {
             super("SpL.StL: " + name);
             this.process = process;
             this.stream = stream;
             this.callback = listener;
+            this.eCallback = eCallback;
             start();
         }
 
         @Override
         public void run() {
-            BufferedReader scanner = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+            BufferedReader scanner = new BufferedReader(new InputStreamReader(stream, charset));
             StringBuilder buffer = new StringBuilder();
             try {
+                long lstListen = 0;
                 while (process.isAlive() || scanner.ready() || !buffer.toString().isEmpty()) {
                     if (scanner.ready()) {
-                        // Если уже есть какой-то ввод, сначала переносим строку
-                        if (!buffer.toString().isEmpty())
-                            buffer.append('\n');
-                        // Добавляем в буффер ввод
-                        buffer.append(scanner.readLine());
+                        buffer.append(scanner.readLine()).append("\n");
                     } else if (!buffer.toString().isEmpty()) {
-                        // Если в этот раз нету данных, но в прошлый раз - был,
-                        // значит надо отправить содержимое буффера
+                        long l = System.currentTimeMillis() - lstListen;
+                        if (l < LISTEN_DELAY)
+                            sleep(LISTEN_DELAY - l);
                         callback.call(buffer.toString());
-                        // и очистить буффер
+                        lstListen = System.currentTimeMillis();
                         buffer = new StringBuilder();
                     }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                eCallback.call(e);
             }
         }
     }
