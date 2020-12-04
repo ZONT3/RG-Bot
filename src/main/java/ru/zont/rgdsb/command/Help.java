@@ -74,7 +74,7 @@ public class Help extends CommandAdapter {
     }
 
     private String formatSynopsis(String synopsis, String prefix) {
-        return String.format("```%s%s```", prefix, synopsis.replaceAll("\n", "\n" + prefix));
+        return String.format("```\n%s%s```", prefix, synopsis.replaceAll("\n", "\n" + prefix));
     }
 
     @Override

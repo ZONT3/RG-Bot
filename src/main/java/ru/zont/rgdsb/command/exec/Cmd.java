@@ -2,6 +2,7 @@ package ru.zont.rgdsb.command.exec;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
+import ru.zont.rgdsb.NotImplementedException;
 import ru.zont.rgdsb.command.CommandAdapter;
 
 import java.util.Properties;
@@ -13,7 +14,8 @@ public class Cmd extends CommandAdapter {
 
     @Override
     public void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException {
-
+        throw new NotImplementedException();
+        // TODO систему наследования
     }
 
     @Override
