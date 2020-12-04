@@ -30,7 +30,7 @@ class ExecHandler {
     private Message statusMessage;
 
     static class Parameters {
-        boolean alwaysPrintExit = true;
+        boolean verbose = true;
         Consumer<Void> onVeryFinish = null;
     }
 
@@ -43,7 +43,8 @@ class ExecHandler {
         name = this.sl.getProcName();
         connectSL(this.sl);
         sl.start();
-        printStart();
+        if (params.verbose)
+            printStart();
     }
 
     private void printStart() {
@@ -92,7 +93,7 @@ class ExecHandler {
         }
 
         if (checkWChPrint()) return;
-        if (code != 0 || params.alwaysPrintExit) {
+        if (code != 0 || params.verbose) {
             printEnd(code);
         }
 

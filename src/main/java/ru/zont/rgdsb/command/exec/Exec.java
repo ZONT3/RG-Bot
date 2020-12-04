@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import ru.zont.rgdsb.NotImplementedException;
 import ru.zont.rgdsb.SubprocessListener;
 import ru.zont.rgdsb.command.CommandAdapter;
+import ru.zont.rgdsb.command.ExternalCallable;
 import ru.zont.rgdsb.tools.Commands;
 import ru.zont.rgdsb.tools.Messages;
 
@@ -23,7 +24,7 @@ import java.util.regex.Pattern;
 
 import static ru.zont.rgdsb.tools.Strings.STR;
 
-public class Exec extends CommandAdapter {
+public class Exec extends CommandAdapter implements ExternalCallable {
     private static long nextPid = 1;
     private static final Map<Long, ExecHandler> processes = Collections.synchronizedMap(new HashMap<>());
 
@@ -32,11 +33,11 @@ public class Exec extends CommandAdapter {
     }
 
     @Override
-    public void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException {
+    public void call(Commands.Input inputObj) {
+        MessageReceivedEvent event = inputObj.getEvent();
         MessageChannel channel = event.getChannel();
-
-        String input = Commands.parseInputRaw(this, event);
-        Pattern pattern = Pattern.compile("[^\\w]*```(java|python|py)\\n((.|\\n)+)```[^\\w]*");
+        String input = inputObj.getRaw();
+        Pattern pattern = Pattern.compile("[^\\w]*(--\\w+ )*[^\\w]*```(\\w+)\\n((.|\\n)+)```[^\\w]*");
         Matcher matcher = pattern.matcher(input);
 
         String lineToExec;
@@ -44,15 +45,32 @@ public class Exec extends CommandAdapter {
         ExecHandler.Parameters params = new ExecHandler.Parameters();
         SubprocessListener.Builder builder = new SubprocessListener.Builder();
         if (matcher.find()) {
-            String lang = matcher.group(1);
-            String code = matcher.group(2).replaceAll("\\\\`", "`");
+            String group1 = matcher.group(1);
+            boolean opts = group1 != null && !group1.isEmpty();
+            boolean buff = false;
+
+            Matcher optMatcher = Pattern.compile("(--\\w+ +)+").matcher(input);
+            if (opts && optMatcher.find()) {
+                for (String s: optMatcher.group().split(" ")) {
+                    switch (s.toLowerCase()) {
+                        case "--buffer": buff = true; break;
+                        case "--silent":
+                            params.verbose = false;
+                            event.getMessage().delete().queue();
+                            break;
+                    }
+                }
+            }
+
+            String lang = matcher.group(2);
+            String code = matcher.group(3).replaceAll("\\\\`", "`");
             File tempFile;
             switch (lang) {
                 case "py":
                 case "python":
                     name = "Python code";
                     tempFile = toTemp(code);
-                    lineToExec = "python -X utf8 -u \"" + tempFile.getAbsolutePath() + "\"";
+                    lineToExec = String.format("python -X utf8 %s\"%s\"", buff ? "" : "-u ", tempFile.getAbsolutePath());
                     break;
                 case "java":
                     name = "Java code";
@@ -70,7 +88,7 @@ public class Exec extends CommandAdapter {
             if (args.length < 1) throw new UserInvalidArgumentException("Corrupted input, may be empty", false);
             name = args[0];
             lineToExec = "cmd /c " + input;
-            params.alwaysPrintExit = false;
+            params.verbose = false;
             builder.setCharset(Charset.forName("866"));
         } else {
             String[] args = input.split(" ");
@@ -82,6 +100,11 @@ public class Exec extends CommandAdapter {
         if (name != null)
             newHandler(builder.build(name, lineToExec), params, channel);
         else Messages.printError(channel, "Error", "Cannot handle input");
+    }
+
+    @Override
+    public void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException {
+        call(Commands.parseInput(this, event));
     }
 
     public synchronized void newHandler(SubprocessListener sl, ExecHandler.Parameters params, MessageChannel channel) {
