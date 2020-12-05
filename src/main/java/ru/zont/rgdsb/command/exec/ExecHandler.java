@@ -10,12 +10,17 @@ import ru.zont.rgdsb.tools.Messages;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
 class ExecHandler {
     public static final int OUT_MAX_LEN = 2000;
+    public static final String TYPE_STDERR = "stderr";
+    public static final String TYPE_STDOUT = "stdout";
+    public static final int COLOR_END_SUCC = 0x00DA00;
+    public static final int COLOR_END_FAIL = 0x8F0000;
+    public static final int COLOR_OUT = 0x311b92;
+    public static final int COLOR_STDERR = 0xBB0000;
 
     private final MessageChannel workingChannel;
     private final long started = System.currentTimeMillis();
@@ -31,6 +36,7 @@ class ExecHandler {
 
     static class Parameters {
         boolean verbose = true;
+        boolean single_window = false;
         Consumer<Void> onVeryFinish = null;
     }
 
@@ -60,7 +66,7 @@ class ExecHandler {
         long millis = System.currentTimeMillis() - started;
         long sec = millis / 1000;
         workingChannel.sendMessage(new EmbedBuilder()
-                .setColor(code == 0 ? 0x00DA00 : 0x8F0000)
+                .setColor(code == 0 ? COLOR_END_SUCC : COLOR_END_FAIL)
                 .setTitle(String.format("Process [%d] finished", pid))
                 .setDescription(String.format(
                         "Name: %s\n" +
@@ -82,7 +88,7 @@ class ExecHandler {
         Messages.printError(workingChannel, "Error in SubprocessListener", Messages.describeException(e));
     }
 
-    private void onFinish(int code) {
+    private synchronized void onFinish(int code) {
         Exec.removeProcess(pid);
         if (params.onVeryFinish != null)
             params.onVeryFinish.accept(null);
@@ -97,31 +103,49 @@ class ExecHandler {
             printEnd(code);
         }
 
+        for (OutListEntry e: stdoutMessages) {
+            List<MessageEmbed> embeds = e.m.getEmbeds();
+            if (embeds.size() < 1) continue;
+            e.edit(e.s, new EmbedBuilder(embeds.get(0))
+                    .setColor(code == 0 ? COLOR_END_SUCC : COLOR_END_FAIL)
+                    .build());
+        }
     }
 
     private void appendStdout(String lines) {
-        appendOut(lines, stdoutMessages, "stdout");
+        appendOut(lines, stdoutMessages, TYPE_STDOUT);
     }
 
     private void appendStderr(String lines) {
-        appendOut(lines, stderrMessages, "stderr");
+        appendOut(lines, stderrMessages, TYPE_STDERR);
     }
 
     private synchronized void appendOut(String lines, OutList outList, String type) {
         if (checkWChPrint()) return;
 
         try {
-            OutListEntry lastOutputMsg = getLastOutputMsg(outList);
-            MessageEmbed embed = lastOutputMsg != null ? getEmbed(lastOutputMsg.getMsg()) : null;
-            String content = lastOutputMsg != null ? lastOutputMsg.getVal() : "";
-            boolean first = true;
-            for (String l: safeAddLines(content + lines)) {
-                if (first && lastOutputMsg != null) {
-                    lastOutputMsg.edit(l, embed);
-                    first = false;
-                } else {
-                    sendOutput(outList, type, l);
-                }
+            if (params.single_window && !type.equalsIgnoreCase(TYPE_STDERR)) {
+                String[] split = lines.split("(?<=\\n)");
+                outList.setContent(split[split.length - 1]);
+            } else outList.appendContent(lines);
+
+            List<String> chunks = splitByChunks(outList.getContent());
+            int i;
+            for (i = 0; i < chunks.size(); i++) {
+                String s = chunks.get(i);
+                if (i < outList.size()) {
+                    if (i < outList.size() - 1 && !params.single_window)
+                        continue;
+                    OutListEntry entry = outList.get(i);
+                    if (!entry.s.equals(s))
+                        entry.edit(s, basicOutputMsg(i, type).build());
+                } else sendOutput(outList, type, s);
+            }
+            if (i < outList.size()) {
+                List<OutListEntry> excess = outList.subList(i, outList.size());
+                for (OutListEntry entry: excess)
+                    entry.m.delete().complete();
+                excess.clear();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -129,13 +153,7 @@ class ExecHandler {
         }
     }
 
-    private MessageEmbed getEmbed(Message msg) {
-        List<MessageEmbed> embeds = msg.getEmbeds();
-        if (embeds.size() > 0) return embeds.get(0);
-        else throw new NullPointerException("No embeds");
-    }
-
-    private List<String> safeAddLines(String lines) {
+    private List<String> splitByChunks(String lines) {
         ArrayList<String> res = new ArrayList<>();
         StringBuilder nextLines = new StringBuilder();
         for (String line: lines.split("(?<=\\n)")) {
@@ -143,8 +161,9 @@ class ExecHandler {
                 nextLines.append(line);
             } else {
                 List<String> list = splitString(nextLines);
-                if (list.size() == 1) {
-                    res.add(nextLines.toString());
+                if (list.size() <= 1) {
+                    if (!nextLines.toString().isEmpty())
+                        res.add(nextLines.toString());
                     nextLines = new StringBuilder(line);
                 } else {
                     res.addAll(list.subList(0, list.size() - 1));
@@ -159,29 +178,32 @@ class ExecHandler {
 
     @NotNull
     private List<String> splitString(CharSequence nextLines) {
-        return Arrays.asList(nextLines.toString().split("(?<=\\G.{" + OUT_MAX_LEN + "})"));
+        String text = nextLines.toString();
+        List<String> ret = new ArrayList<>((text.length() + OUT_MAX_LEN - 1) / OUT_MAX_LEN);
+        for (int start = 0; start < text.length(); start += OUT_MAX_LEN)
+            ret.add(text.substring(start, Math.min(text.length(), start + OUT_MAX_LEN)));
+        return ret;
     }
 
     private void sendOutput(OutList outList, String type, String lines) {
         outList.add(
-                workingChannel.sendMessage(basicOutputMsg(outList, type)
+                workingChannel.sendMessage(basicOutputMsg(outList.size(), type)
                         .setDescription("```\n" + lines + "```")
                         .build()
                 ).complete(), lines);
     }
 
-    private EmbedBuilder basicOutputMsg(OutList outList, String type) {
-        return new EmbedBuilder().setTitle(nextTitle(outList, type))
-                .setColor(type.equalsIgnoreCase("stdout") ? 0x311b92 : 0xBB0000);
+    private EmbedBuilder basicOutputMsg(int i, String type) {
+        int endColor = -1;
+        try {
+            endColor = (sl.getExitStatus() == 0 ? COLOR_END_SUCC : COLOR_END_FAIL);
+        } catch (Exception ignored) { }
+        return new EmbedBuilder().setTitle(nextTitle(i, type))
+                .setColor(type.equalsIgnoreCase(TYPE_STDOUT) ? (endColor < 0 ? COLOR_OUT : endColor) : COLOR_STDERR);
     }
 
-    private String nextTitle(OutList outList, String type) {
-        return String.format("[%d] %s %s #%d", pid, name, type, outList.size());
-    }
-
-    private OutListEntry getLastOutputMsg(OutList outList) {
-        if (outList.isEmpty()) return null;
-        return outList.get(outList.size() - 1);
+    private String nextTitle(int i, String type) {
+        return String.format("[%d] %s %s #%d", pid, name, type, i+1);
     }
 
     private boolean checkWChPrint() {
@@ -201,8 +223,22 @@ class ExecHandler {
     }
 
     private static class OutList extends ArrayList<OutListEntry> {
+        private String content = "";
+
         public void add(Message m, String s) {
             add(new OutListEntry(m, s));
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        public void appendContent(CharSequence a) {
+            content += a.toString();
+        }
+
+        public void setContent(String content) {
+            this.content = content;
         }
     }
 
@@ -222,14 +258,6 @@ class ExecHandler {
                             .build()
             ).complete();
             s = ns;
-        }
-
-        public Message getMsg() {
-            return m;
-        }
-
-        public String getVal() {
-            return s;
         }
     }
 }

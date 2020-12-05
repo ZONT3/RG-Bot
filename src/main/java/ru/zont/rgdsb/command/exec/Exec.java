@@ -52,10 +52,12 @@ public class Exec extends CommandAdapter implements ExternalCallable {
 
             boolean buff = inputObj.hasOpt("b", true) || inputObj.hasOpt("buffer", true);
             boolean silent = inputObj.hasOpt("s", true) || inputObj.hasOpt("silent", true);
+            boolean single = inputObj.hasOpt("S", true) || inputObj.hasOpt("single", true);
             if (silent) {
                 params.verbose = false;
                 event.getMessage().delete().queue();
             }
+            if (single) params.single_window = true;
 
             File tempFile;
             switch (lang) {
