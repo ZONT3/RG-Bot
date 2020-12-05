@@ -64,7 +64,7 @@ public abstract class CommandAdapter {
     public static void onMessageReceived(@NotNull MessageReceivedEvent event, CommandAdapter[] adapters) {
         if (event.getAuthor().isBot()) return;
         String prefix = Configs.getPrefix();
-        String content = event.getMessage().getContentStripped();
+        String content = event.getMessage().getContentRaw();
         boolean inGuild = event.getChannelType().isGuild();
         if (inGuild && !content.startsWith(prefix))
             return;

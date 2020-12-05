@@ -32,7 +32,9 @@ public class Commands {
             msg = msg.replaceFirst(adapter.getCommandName(), "");
         else throw new IllegalStateException("Provided event does not contain a command request");
 
-        return msg.replaceFirst(" +", "");
+        if (msg.startsWith(" "))
+            msg = msg.replaceFirst(" +", "");
+        return msg;
     }
 
     public static Input parseInput(CommandAdapter adapter, MessageReceivedEvent event) {
@@ -80,6 +82,7 @@ public class Commands {
 
     public static class Input implements Iterable<String> {
         private final String raw;
+        private List<String> allArgs;
         private ArrayList<String> args;
         private ArrayList<String> opts;
 
@@ -96,44 +99,62 @@ public class Commands {
         }
 
         private void checkBuild() {
-            if (args != null && opts != null) return;
+            if (args != null && opts != null && allArgs != null) return;
             args = new ArrayList<>();
             opts = new ArrayList<>();
-            for (String s: parseArgs(raw)) {
-                if (s.startsWith("--")) {
-                    args.add(s);
-                    opts.add(s);
-                } else if (s.startsWith("-")) {
-                    parseOpts(s, args);
+            allArgs = parseArgs(raw);
+            for (String s: allArgs) {
+                if (isOption(s))
                     parseOpts(s, opts);
-                } else args.add(s);
+                else args.add(s);
             }
         }
 
         private void parseOpts(String s, List<String> list) {
-            for (char c: s.substring(1).toCharArray()) list.add(c + "");
+            if (s.startsWith("--"))
+                list.add(s.substring(2));
+            else for (char c: s.substring(1).toCharArray()) list.add(c + "");
         }
 
         public boolean hasOpt(String o) {
+            return hasOpt(o, false);
+        }
+
+        public boolean hasOpt(String o, boolean prefix) {
             checkBuild();
-            return opts.contains(o);
+            if (!prefix) return opts.contains(o);
+            else         return getPrefixOpts().contains(o);
         }
 
         public ArrayList<String> getArgs() {
             checkBuild();
-            ArrayList<String> res = new ArrayList<>(args);
-            res.removeIf(s -> opts.contains(s));
-            return res;
+            return args;
         }
 
-        public ArrayList<String> getAllArgs() {
+        public List<String> getAllArgs() {
             checkBuild();
-            return args;
+            return allArgs;
         }
 
         public ArrayList<String> getOptions() {
             checkBuild();
             return opts;
+        }
+
+        public ArrayList<String> getPrefixOpts() {
+            ArrayList<String> res = new ArrayList<>();
+            for (String s: this) {
+                if (isOption(s)) parseOpts(s, res);
+                else return res;
+            }
+            return res;
+        }
+
+        public static boolean isOption(CharSequence sequence) {
+            String s = sequence.toString();
+            if (s.startsWith(" "))
+                s = s.replaceFirst(" +", "");
+            return s.startsWith("-") && !s.startsWith("---");
         }
 
         public String getRaw() {
@@ -142,6 +163,11 @@ public class Commands {
 
         public MessageReceivedEvent getEvent() {
             return event;
+        }
+
+        public String stripPrefixOpts() {
+            if (!raw.startsWith("-") || raw.startsWith("---")) return raw;
+            return raw.replaceFirst("(--?[^ ]+ +)+", "");
         }
 
         @NotNull
@@ -160,7 +186,7 @@ public class Commands {
 
             @Override
             public String next() {
-                return args.get(pointer++);
+                return allArgs.get(pointer++);
             }
         }
     }

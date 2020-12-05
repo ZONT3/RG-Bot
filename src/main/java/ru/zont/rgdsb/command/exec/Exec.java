@@ -35,9 +35,11 @@ public class Exec extends CommandAdapter implements ExternalCallable {
     @Override
     public void call(Commands.Input inputObj) {
         MessageReceivedEvent event = inputObj.getEvent();
+        if (event == null) throw new IllegalStateException("Provided input must contain event");
         MessageChannel channel = event.getChannel();
         String input = inputObj.getRaw();
-        Pattern pattern = Pattern.compile("[^\\w]*(--\\w+ )*[^\\w]*```(\\w+)\\n((.|\\n)+)```[^\\w]*");
+
+        Pattern pattern = Pattern.compile("[^\\w]*(--?\\w+ )*[^\\w]*```(\\w+)\\n((.|\\n)+)```[^\\w]*");
         Matcher matcher = pattern.matcher(input);
 
         String lineToExec;
@@ -45,45 +47,37 @@ public class Exec extends CommandAdapter implements ExternalCallable {
         ExecHandler.Parameters params = new ExecHandler.Parameters();
         SubprocessListener.Builder builder = new SubprocessListener.Builder();
         if (matcher.find()) {
-            String group1 = matcher.group(1);
-            boolean opts = group1 != null && !group1.isEmpty();
-            boolean buff = false;
-
-            Matcher optMatcher = Pattern.compile("(--\\w+ +)+").matcher(input);
-            if (opts && optMatcher.find()) {
-                for (String s: optMatcher.group().split(" ")) {
-                    switch (s.toLowerCase()) {
-                        case "--buffer": buff = true; break;
-                        case "--silent":
-                            params.verbose = false;
-                            event.getMessage().delete().queue();
-                            break;
-                    }
-                }
-            }
-
             String lang = matcher.group(2);
             String code = matcher.group(3).replaceAll("\\\\`", "`");
+
+            boolean buff = inputObj.hasOpt("b", true) || inputObj.hasOpt("buffer", true);
+            boolean silent = inputObj.hasOpt("s", true) || inputObj.hasOpt("silent", true);
+            if (silent) {
+                params.verbose = false;
+                event.getMessage().delete().queue();
+            }
+
             File tempFile;
             switch (lang) {
                 case "py":
                 case "python":
                     name = "Python code";
                     tempFile = toTemp(code);
-                    lineToExec = String.format("python -X utf8 %s\"%s\"", buff ? "" : "-u ", tempFile.getAbsolutePath());
+                    lineToExec = String.format("python -X utf8 %s\"%s\"",
+                            buff ? "" : "-u ",
+                            tempFile.getAbsolutePath());
                     break;
                 case "java":
                     name = "Java code";
                     throw new NotImplementedException();
-
                 default: throw new RuntimeException("Unknown programming language");
             }
             params.onVeryFinish = param -> {
                 if (!tempFile.delete())
                     System.err.println("Cannot delete temp file!");
             };
-        } else if (input.startsWith("--cmd ")) {
-            input = input.replaceFirst("--cmd ", "");
+        } else if (inputObj.hasOpt("c", true) || inputObj.hasOpt("cmd", true)) {
+            input = inputObj.stripPrefixOpts();
             String[] args = input.split(" ");
             if (args.length < 1) throw new UserInvalidArgumentException("Corrupted input, may be empty", false);
             name = args[0];
@@ -91,6 +85,7 @@ public class Exec extends CommandAdapter implements ExternalCallable {
             params.verbose = false;
             builder.setCharset(Charset.forName("866"));
         } else {
+            input = inputObj.stripPrefixOpts();
             String[] args = input.split(" ");
             if (args.length < 1) throw new UserInvalidArgumentException("Corrupted input, may be empty", false);
             name = args[0];
