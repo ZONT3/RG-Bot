@@ -69,8 +69,7 @@ public class SubprocessListener extends Thread {
     }
 
     public void terminate() {
-        throw new NotImplementedException();
-        // TODO
+        process.destroy();
     }
 
     public int getExitStatus() {
