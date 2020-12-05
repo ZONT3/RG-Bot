@@ -31,7 +31,7 @@ public class Help extends CommandAdapter {
 
     @Override
     public void onRequest(@NotNull MessageReceivedEvent event) {
-        String inpt = Commands.parseInputRaw(this, event);
+        String inpt = Commands.parseRaw(this, event);
         CommandAdapter comm = null;
         boolean b = !inpt.isEmpty();
         if (b) comm = Commands.forName(inpt);

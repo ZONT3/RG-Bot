@@ -15,7 +15,7 @@ public class Term extends CommandAdapter {
 
     @Override
     public void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException {
-        String input = Commands.parseInputRaw(this, event);
+        String input = Commands.parseRaw(this, event);
         if (!input.matches("\\d+")) throw new UserInvalidArgumentException("PID **only** required");
 
         MessageChannel channel = event.getChannel();

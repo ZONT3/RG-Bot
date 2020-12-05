@@ -14,7 +14,7 @@ public class Cmd extends CommandAdapter {
 
     @Override
     public void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException {
-        Commands.call(Exec.class, "--cmd " + Commands.parseInputRaw(this, event), event);
+        Commands.call(Exec.class, "--cmd " + Commands.parseRaw(this, event), event);
     }
 
     @Override
