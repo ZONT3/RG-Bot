@@ -25,7 +25,6 @@ public class Main extends ListenerAdapter {
             setProperty("command_prefix", "//");
             setProperty("TA_IDS", "331524458806247426");
         }});
-        Configs.writeDefaultGlobalProps();
 
         final ZDSBot zdsBot = new ZDSBot(args[0], Globals.version, "ru.zont.rgdsb.command", "ru.zont.rgdsb.listeners");
         zdsBot.getJdaBuilder()
