@@ -4,20 +4,20 @@ import javafx.util.Pair;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import ru.zont.rgdsb.tools.Globals;
-import ru.zont.rgdsb.tools.Messages;
+import ru.zont.rgdsb.tools.messages.Status;
 
 import java.sql.*;
 
 public class StatusStatistics extends ServerStatusEntry {
     @Override
     MessageEmbed getInitialMsg() {
-        return Messages.serverStatisticInitial();
+        return Status.serverStatisticInitial();
     }
 
     @Override
     void update(Message entryMessage) {
         Pair<Short, Short> result = retrieve();
-        entryMessage.editMessage(Messages.serverStatistic(result.getKey(), result.getValue())).queue();
+        entryMessage.editMessage(Status.serverStatistic(result.getKey(), result.getValue())).queue();
     }
 
     public static Pair<Short, Short> retrieve() {

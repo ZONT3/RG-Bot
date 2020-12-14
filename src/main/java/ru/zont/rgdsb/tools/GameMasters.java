@@ -2,8 +2,7 @@ package ru.zont.rgdsb.tools;
 
 import java.sql.*;
 import java.util.ArrayList;
-
-import static ru.zont.rgdsb.tools.Strings.STR;
+import static ru.zont.dsbot.core.Strings.STR;
 
 public class GameMasters {
     public static ArrayList<GM> retrieve() {
@@ -81,7 +80,7 @@ public class GameMasters {
         }
     }
 
-    static Date getLastLogin(String steamid) {
+    public static Date getLastLogin(String steamid) {
         try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
              Statement st = connection.createStatement()) {
             ResultSet resultSet = st.executeQuery(
@@ -100,7 +99,7 @@ public class GameMasters {
         }
     }
 
-    static Date getAssignedDate(long userid) {
+    public static Date getAssignedDate(long userid) {
         try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
              Statement st = connection.createStatement()) {
             ResultSet resultSet = st.executeQuery(

@@ -5,24 +5,23 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import ru.zont.rgdsb.tools.GameMasters;
-import ru.zont.rgdsb.tools.Messages;
+import ru.zont.rgdsb.tools.messages.GMs;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static ru.zont.rgdsb.tools.Strings.STR;
+import static ru.zont.dsbot.core.Strings.STR;
 
 public class StatusGMs extends ServerStatusEntry {
     @Override
     MessageEmbed getInitialMsg() {
-        return Messages.statusGMsInitial();
+        return GMs.statusGMsInitial();
     }
 
     @Override
     void update(Message entryMessage) {
         ArrayList<GameMasters.GM> gms = GameMasters.retrieve();
         updateNicks(gms, entryMessage.getGuild());
-        entryMessage.editMessage(Messages.gmList(gms, entryMessage.getGuild())).queue();
+        entryMessage.editMessage(GMs.gmList(gms, entryMessage.getGuild())).queue();
     }
 
     private void updateNicks(List<GameMasters.GM> gms, Guild guild) {

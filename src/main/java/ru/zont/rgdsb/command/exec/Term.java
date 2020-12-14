@@ -4,14 +4,15 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.rgdsb.command.CommandAdapter;
-import ru.zont.rgdsb.tools.Commands;
-import ru.zont.rgdsb.tools.Messages;
-import ru.zont.rgdsb.tools.Strings;
+import ru.zont.dsbot.core.*;
 
 import java.util.Properties;
 
 public class Term extends CommandAdapter {
+
+    public Term(ZDSBot bot) throws RegisterException {
+        super(bot);
+    }
 
     @Override
     public void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException {

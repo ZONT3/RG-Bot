@@ -6,19 +6,21 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
-import ru.zont.rgdsb.tools.Configs;
+import ru.zont.dsbot.core.Configs;
+import ru.zont.dsbot.core.Strings;
 import ru.zont.rgdsb.tools.Globals;
-import ru.zont.rgdsb.tools.Messages;
-import ru.zont.rgdsb.tools.Strings;
+import ru.zont.rgdsb.tools.messages.Status;
 
 import java.sql.*;
 import java.util.List;
+
+import static ru.zont.rgdsb.tools.Configs.*;
 
 public class StatusMain extends ServerStatusEntry {
 
     @Override
     MessageEmbed getInitialMsg() {
-        return Messages.serverInactive();
+        return Status.serverInactive();
     }
 
     @Override
@@ -31,8 +33,8 @@ public class StatusMain extends ServerStatusEntry {
                                 struct.count,
                                 Configs.getPrefix() )));
 
-        Role roleGM = entryMessage.getGuild().getRoleById(Configs.getRoleGmID());
-        entryMessage.editMessage(Messages.status(struct, roleGM != null ? roleGM.getAsMention() : "GM")).queue();
+        Role roleGM = entryMessage.getGuild().getRoleById(getRoleGmID());
+        entryMessage.editMessage(Status.status(struct, roleGM != null ? roleGM.getAsMention() : "GM")).queue();
     }
 
     public static ServerInfoStruct retrieveServerInfo() {

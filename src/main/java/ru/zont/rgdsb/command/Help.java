@@ -3,20 +3,18 @@ package ru.zont.rgdsb.command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.rgdsb.tools.Commands;
+import ru.zont.dsbot.core.*;
 import ru.zont.rgdsb.tools.Globals;
-import ru.zont.rgdsb.tools.Messages;
-import ru.zont.rgdsb.tools.Configs;
 
 import java.awt.*;
 import java.util.Map;
 import java.util.Properties;
 
-import static ru.zont.rgdsb.tools.Strings.STR;
+import static ru.zont.dsbot.core.Strings.STR;
 
 public class Help extends CommandAdapter {
-    public Help() throws RegisterException {
-        super();
+    public Help(ZDSBot bot) throws RegisterException {
+        super(bot);
     }
 
     @Override
@@ -34,14 +32,14 @@ public class Help extends CommandAdapter {
         String inpt = Commands.parseRaw(this, event);
         CommandAdapter comm = null;
         boolean b = !inpt.isEmpty();
-        if (b) comm = Commands.forName(inpt);
+        if (b) comm = Commands.forName(inpt, getBot());
         if (comm == null) {
             if (b) Messages.printError(event.getChannel(), STR.getString("comm.help.err.unknown.title"), STR.getString("comm.help.err.unknown"));
 
             EmbedBuilder builder = new EmbedBuilder()
                     .setTitle(STR.getString("comm.help.list.title"))
                     .setColor(Color.LIGHT_GRAY);
-            for (Map.Entry<String, CommandAdapter> e: Commands.getAllCommands().entrySet()) {
+            for (Map.Entry<String, CommandAdapter> e: Commands.getAllCommands(getBot()).entrySet()) {
                 CommandAdapter command = e.getValue();
                 if (command.isHidden()) continue;
                 builder.addField(

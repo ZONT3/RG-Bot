@@ -7,9 +7,9 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import ru.zont.rgdsb.tools.LOG;
+import ru.zont.dsbot.core.LOG;
+import ru.zont.dsbot.core.Strings;
 import ru.zont.rgdsb.tools.Configs;
-import ru.zont.rgdsb.tools.Strings;
 
 import javax.annotation.Nonnull;
 

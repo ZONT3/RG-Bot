@@ -1,15 +1,12 @@
 package ru.zont.rgdsb.tools;
 
-import ru.zont.rgdsb.command.CommandAdapter;
 import ru.zont.rgdsb.listeners.LPlayersMonitoring;
 import ru.zont.rgdsb.listeners.LServerStatus;
 
 public class Globals {
-    public static final String version = "1.8.1";
+    public static final String version = "1.9";
 
     public static String dbConnection = "";
-
-    public static CommandAdapter[] commandAdapters = null;
 
     public static String ZONT_MENTION = "<@331524458806247426>";
 

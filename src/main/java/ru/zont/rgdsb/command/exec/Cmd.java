@@ -2,19 +2,22 @@ package ru.zont.rgdsb.command.exec;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.rgdsb.command.CommandAdapter;
-import ru.zont.rgdsb.tools.Commands;
+import ru.zont.dsbot.core.CommandAdapter;
+import ru.zont.dsbot.core.Commands;
+import ru.zont.dsbot.core.ZDSBot;
 
 import java.util.Properties;
 
-import static ru.zont.rgdsb.tools.Strings.STR;
+import static ru.zont.dsbot.core.Strings.STR;
 
 public class Cmd extends CommandAdapter {
-    public Cmd() throws RegisterException { super(); }
+    public Cmd(ZDSBot bot) throws RegisterException {
+        super(bot);
+    }
 
     @Override
     public void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException {
-        Commands.call(Exec.class, "--cmd " + Commands.parseRaw(this, event), event);
+        Commands.call(Exec.class, "--cmd " + Commands.parseRaw(this, event), event, getBot());
     }
 
     @Override

@@ -7,22 +7,28 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.rgdsb.tools.*;
-import ru.zont.rgdsb.tools.Commands.Input;
+import ru.zont.dsbot.core.LOG;
+import ru.zont.dsbot.core.LongCommandAdapter;
+import ru.zont.dsbot.core.Messages;
+import ru.zont.dsbot.core.ZDSBot;
+import ru.zont.rgdsb.tools.Configs;
+import ru.zont.rgdsb.tools.GameMasters;
 
 import java.util.ArrayList;
 import java.util.Properties;
 
-import static ru.zont.rgdsb.tools.Strings.STR;
+import static ru.zont.dsbot.core.Commands.*;
+import static ru.zont.dsbot.core.Strings.STR;
+
 
 public class GMs extends LongCommandAdapter {
-    public GMs() throws RegisterException {
-        super();
+    public GMs(ZDSBot bot) throws RegisterException {
+        super(bot);
     }
 
     @Override
     public void onRequestLong(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException {
-        Input input = Commands.parseInput(this, event);
+        Input input = parseInput(this, event);
         ArrayList<String> args = input.getArgs();
         if (args.size() < 1)
             throw new UserInvalidArgumentException(STR.getString("err.incorrect_args"));
@@ -46,7 +52,7 @@ public class GMs extends LongCommandAdapter {
             case "get":
                 Messages.sendSplit(
                         event.getChannel(),
-                        Messages.gmList(
+                        ru.zont.rgdsb.tools.messages.GMs.gmList(
                                 GameMasters.retrieve(),
                                 event.getGuild(),
                                 input.hasOpt("s"),
@@ -126,7 +132,7 @@ public class GMs extends LongCommandAdapter {
     public boolean checkPermission(MessageReceivedEvent event) {
         // TODO rework this
 
-        String[] args = Commands.parseArgs(this, event);
+        String[] args = parseArgs(this, event);
         if (args.length >= 2 && (args[1].toLowerCase().equals("get") || (args[1].toLowerCase().equals("list"))))
             return true;
         Member member = event.getMember();

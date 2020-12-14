@@ -1,2 +1,3 @@
 rootProject.name = 'RG-Bot'
-
+include ":core"
+project(':core').projectDir = new File(settingsDir, '../DS-Bot-CORE')

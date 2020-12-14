@@ -3,12 +3,9 @@ package ru.zont.rgdsb.command.exec;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
+import ru.zont.dsbot.core.*;
 import ru.zont.rgdsb.NotImplementedException;
 import ru.zont.rgdsb.SubprocessListener;
-import ru.zont.rgdsb.command.CommandAdapter;
-import ru.zont.rgdsb.command.ExternalCallable;
-import ru.zont.rgdsb.tools.Commands;
-import ru.zont.rgdsb.tools.Messages;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,14 +19,14 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static ru.zont.rgdsb.tools.Strings.STR;
+import static ru.zont.dsbot.core.Strings.STR;
 
 public class Exec extends CommandAdapter implements ExternalCallable {
     private static long nextPid = 1;
     private static final Map<Long, ExecHandler> processes = Collections.synchronizedMap(new HashMap<>());
 
-    public Exec() throws RegisterException {
-        super();
+    public Exec(ZDSBot bot) throws RegisterException {
+        super(bot);
     }
 
     @Override
@@ -141,7 +138,8 @@ public class Exec extends CommandAdapter implements ExternalCallable {
 
     @Override
     public String getSynopsis() {
-        return "exec <input>"; // TODO
+        return "exec [-c] <input>\n" +
+                "exec [-sSb] <code in PL, with discord-highlighting>";
     }
 
     @Override

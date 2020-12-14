@@ -5,18 +5,20 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.rgdsb.tools.Globals;
-import ru.zont.rgdsb.tools.Messages;
-import ru.zont.rgdsb.tools.Configs;
+import ru.zont.dsbot.core.CommandAdapter;
+import ru.zont.dsbot.core.Messages;
+import ru.zont.dsbot.core.ZDSBot;
 import ru.zont.rgdsb.listeners.StatusMain;
+import ru.zont.rgdsb.tools.Configs;
+import ru.zont.rgdsb.tools.Globals;
 
 import java.util.Properties;
 
-import static ru.zont.rgdsb.tools.Strings.STR;
+import static ru.zont.dsbot.core.Strings.STR;
 
 public class Status extends CommandAdapter {
-    public Status() throws RegisterException {
-        super();
+    public Status(ZDSBot bot) throws RegisterException {
+        super(bot);
     }
 
     @Override
@@ -41,11 +43,12 @@ public class Status extends CommandAdapter {
         final String finalGmMention = gmMention;
 
         StatusMain.ServerInfoStruct struct = StatusMain.retrieveServerInfo();
-        EmbedBuilder builder = new EmbedBuilder(Messages.status(struct, finalGmMention));
+        EmbedBuilder builder = new EmbedBuilder(ru.zont.rgdsb.tools.messages.Status.status(struct, finalGmMention));
         if (Globals.serverStatus != null) {
             Message message = Globals.serverStatus.getMessage(StatusMain.class);
             if (message != null)
-                builder.setDescription(String.format("%s:\n%s", STR.getString("comm.status.link_live"), message.getJumpUrl()));
+                builder.setDescription(String.format("[%s](%s)",
+                        STR.getString("comm.status.link_live"), message.getJumpUrl()));
         }
         event.getChannel().sendMessage(Messages.addTimestamp(builder)).queue();
     }
