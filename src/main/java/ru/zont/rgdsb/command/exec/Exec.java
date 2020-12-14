@@ -34,11 +34,11 @@ public class Exec extends CommandAdapter implements ExternalCallable {
     }
 
     @Override
-    public void call(Commands.Input inputObj) {
-        MessageReceivedEvent event = inputObj.getEvent();
+    public void call(Commands.Input io) {
+        MessageReceivedEvent event = io.getEvent();
         if (event == null) throw new IllegalStateException("Provided input must contain event");
         MessageChannel channel = event.getChannel();
-        String input = inputObj.getRaw();
+        String input = io.getRaw();
 
         Pattern pattern = Pattern.compile("[^\\w]*(--?\\w+ )*[^\\w]*```(\\w+)\\n((.|\\n)+)```[^\\w]*");
         Matcher matcher = pattern.matcher(input);
@@ -51,9 +51,9 @@ public class Exec extends CommandAdapter implements ExternalCallable {
             String lang = matcher.group(2);
             String code = matcher.group(3).replaceAll("\\\\`", "`");
 
-            boolean buff = inputObj.hasOpt("b", true) || inputObj.hasOpt("buffer", true);
-            boolean silent = inputObj.hasOpt("s", true) || inputObj.hasOpt("silent", true);
-            boolean single = inputObj.hasOpt("S", true) || inputObj.hasOpt("single", true);
+            boolean buff = io.hasOpt("b", true) || io.hasOpt("buffer", true);
+            boolean silent = io.hasOpt("s", true) || io.hasOpt("silent", true);
+            boolean single = io.hasOpt("S", true) || io.hasOpt("single", true);
             if (silent) {
                 params.verbose = false;
                 event.getMessage().delete().queue();
@@ -79,8 +79,8 @@ public class Exec extends CommandAdapter implements ExternalCallable {
                 if (!tempFile.delete())
                     System.err.println("Cannot delete temp file!");
             };
-        } else if (inputObj.hasOpt("c", true) || inputObj.hasOpt("cmd", true)) {
-            input = inputObj.stripPrefixOpts();
+        } else if (io.hasOpt("c", true) || io.hasOpt("cmd", true)) {
+            input = io.stripPrefixOpts();
             String[] args = input.split(" ");
             if (args.length < 1) throw new UserInvalidArgumentException("Corrupted input, may be empty", false);
             name = args[0];
@@ -88,10 +88,15 @@ public class Exec extends CommandAdapter implements ExternalCallable {
             params.verbose = false;
             builder.setCharset(Charset.forName("866"));
         } else {
-            input = inputObj.stripPrefixOpts();
+            input = io.stripPrefixOpts();
             String[] args = input.split(" ");
             if (args.length < 1) throw new UserInvalidArgumentException("Corrupted input, may be empty", false);
-            name = args[0];
+
+            if (io.hasOpt("V", true)) params.verbose = false;
+
+            final String nameParam = io.getParamOpt("name", true);
+            if (!nameParam.isEmpty()) name = nameParam;
+            else name = args[0];
             lineToExec = input;
         }
 
