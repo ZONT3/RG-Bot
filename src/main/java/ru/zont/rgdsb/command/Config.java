@@ -7,6 +7,11 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import ru.zont.dsbot.core.*;
+import ru.zont.dsbot.core.commands.CommandAdapter;
+import ru.zont.dsbot.core.commands.Commands;
+import ru.zont.dsbot.core.tools.Configs;
+import ru.zont.dsbot.core.tools.LOG;
+import ru.zont.dsbot.core.tools.Messages;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -14,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static ru.zont.dsbot.core.Strings.STR;
+import static ru.zont.dsbot.core.tools.Strings.STR;
 
 public class Config extends CommandAdapter {
 

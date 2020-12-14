@@ -7,9 +7,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.dsbot.core.LOG;
-import ru.zont.dsbot.core.LongCommandAdapter;
-import ru.zont.dsbot.core.Messages;
+import ru.zont.dsbot.core.tools.LOG;
+import ru.zont.dsbot.core.commands.LongCommandAdapter;
+import ru.zont.dsbot.core.tools.Messages;
 import ru.zont.dsbot.core.ZDSBot;
 import ru.zont.rgdsb.tools.Configs;
 import ru.zont.rgdsb.tools.GameMasters;
@@ -17,8 +17,8 @@ import ru.zont.rgdsb.tools.GameMasters;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import static ru.zont.dsbot.core.Commands.*;
-import static ru.zont.dsbot.core.Strings.STR;
+import static ru.zont.dsbot.core.commands.Commands.*;
+import static ru.zont.dsbot.core.tools.Strings.STR;
 
 
 public class GMs extends LongCommandAdapter {

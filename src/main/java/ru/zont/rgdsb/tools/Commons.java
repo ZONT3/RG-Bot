@@ -1,6 +1,6 @@
 package ru.zont.rgdsb.tools;
 
-import static ru.zont.dsbot.core.Strings.*;
+import static ru.zont.dsbot.core.tools.Strings.*;
 
 public class Commons {
     public static String trimNick(String nick) {

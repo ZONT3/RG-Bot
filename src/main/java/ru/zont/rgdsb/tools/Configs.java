@@ -1,6 +1,6 @@
 package ru.zont.rgdsb.tools;
 
-import static ru.zont.dsbot.core.Configs.*;
+import static ru.zont.dsbot.core.tools.Configs.*;
 
 public class Configs {
 

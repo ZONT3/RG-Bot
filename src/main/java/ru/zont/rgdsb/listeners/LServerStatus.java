@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.dsbot.core.Messages;
+import ru.zont.dsbot.core.tools.Messages;
 import ru.zont.rgdsb.tools.Configs;
 
 import javax.annotation.Nonnull;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ru.zont.dsbot.core.Strings.STR;
+import static ru.zont.dsbot.core.tools.Strings.STR;
 
 public class LServerStatus extends ListenerAdapter {
     private List<ServerStatusEntry> entryList;

@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.dsbot.core.Messages;
+import ru.zont.dsbot.core.tools.Messages;
 import ru.zont.rgdsb.SubprocessListener;
 
 import java.time.Instant;

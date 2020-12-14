@@ -2,7 +2,7 @@ package ru.zont.rgdsb.tools;
 
 import java.sql.*;
 import java.util.ArrayList;
-import static ru.zont.dsbot.core.Strings.STR;
+import static ru.zont.dsbot.core.tools.Strings.STR;
 
 public class GameMasters {
     public static ArrayList<GM> retrieve() {

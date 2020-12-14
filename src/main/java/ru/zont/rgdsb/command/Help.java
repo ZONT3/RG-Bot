@@ -4,13 +4,17 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import ru.zont.dsbot.core.*;
+import ru.zont.dsbot.core.commands.CommandAdapter;
+import ru.zont.dsbot.core.commands.Commands;
+import ru.zont.dsbot.core.tools.Configs;
+import ru.zont.dsbot.core.tools.Messages;
 import ru.zont.rgdsb.tools.Globals;
 
 import java.awt.*;
 import java.util.Map;
 import java.util.Properties;
 
-import static ru.zont.dsbot.core.Strings.STR;
+import static ru.zont.dsbot.core.tools.Strings.STR;
 
 public class Help extends CommandAdapter {
     public Help(ZDSBot bot) throws RegisterException {

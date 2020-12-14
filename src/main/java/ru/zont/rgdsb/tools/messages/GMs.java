@@ -4,8 +4,8 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import ru.zont.dsbot.core.Configs;
-import ru.zont.dsbot.core.Messages;
+import ru.zont.dsbot.core.tools.Configs;
+import ru.zont.dsbot.core.tools.Messages;
 import ru.zont.rgdsb.tools.Commons;
 import ru.zont.rgdsb.tools.GameMasters;
 
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import static ru.zont.dsbot.core.Strings.STR;
+import static ru.zont.dsbot.core.tools.Strings.STR;
 
 public class GMs {
     public static MessageEmbed statusGMsInitial() {

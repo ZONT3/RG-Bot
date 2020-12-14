@@ -9,7 +9,7 @@ import java.awt.*;
 import java.time.LocalTime;
 import java.util.List;
 
-import static ru.zont.dsbot.core.Strings.STR;
+import static ru.zont.dsbot.core.tools.Strings.STR;
 
 public class Status {
     public static MessageEmbed status(StatusMain.ServerInfoStruct serverInfo, String gmMention) {

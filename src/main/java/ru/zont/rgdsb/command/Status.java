@@ -5,8 +5,8 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.dsbot.core.CommandAdapter;
-import ru.zont.dsbot.core.Messages;
+import ru.zont.dsbot.core.commands.CommandAdapter;
+import ru.zont.dsbot.core.tools.Messages;
 import ru.zont.dsbot.core.ZDSBot;
 import ru.zont.rgdsb.listeners.StatusMain;
 import ru.zont.rgdsb.tools.Configs;
@@ -14,7 +14,7 @@ import ru.zont.rgdsb.tools.Globals;
 
 import java.util.Properties;
 
-import static ru.zont.dsbot.core.Strings.STR;
+import static ru.zont.dsbot.core.tools.Strings.STR;
 
 public class Status extends CommandAdapter {
     public Status(ZDSBot bot) throws RegisterException {

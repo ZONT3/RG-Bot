@@ -1,7 +1,7 @@
 package ru.zont.rgdsb;
 
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import ru.zont.dsbot.core.Configs;
+import ru.zont.dsbot.core.tools.Configs;
 import ru.zont.dsbot.core.ZDSBot;
 import ru.zont.rgdsb.listeners.LPlayersMonitoring;
 import ru.zont.rgdsb.listeners.LServerStatus;

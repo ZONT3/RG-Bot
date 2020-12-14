@@ -9,7 +9,7 @@ import ru.zont.rgdsb.tools.messages.GMs;
 
 import java.util.ArrayList;
 import java.util.List;
-import static ru.zont.dsbot.core.Strings.STR;
+import static ru.zont.dsbot.core.tools.Strings.STR;
 
 public class StatusGMs extends ServerStatusEntry {
     @Override

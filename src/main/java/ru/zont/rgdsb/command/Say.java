@@ -5,11 +5,11 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.dsbot.core.CommandAdapter;
+import ru.zont.dsbot.core.commands.CommandAdapter;
 import ru.zont.dsbot.core.ZDSBot;
 
 import java.util.Properties;
-import static ru.zont.dsbot.core.Strings.STR;
+import static ru.zont.dsbot.core.tools.Strings.STR;
 
 public class Say extends CommandAdapter {
     public Say(ZDSBot bot) throws RegisterException {

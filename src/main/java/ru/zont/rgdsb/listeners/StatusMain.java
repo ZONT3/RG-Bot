@@ -6,8 +6,8 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
-import ru.zont.dsbot.core.Configs;
-import ru.zont.dsbot.core.Strings;
+import ru.zont.dsbot.core.tools.Configs;
+import ru.zont.dsbot.core.tools.Strings;
 import ru.zont.rgdsb.tools.Globals;
 import ru.zont.rgdsb.tools.messages.Status;
 

@@ -4,6 +4,10 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import ru.zont.dsbot.core.*;
+import ru.zont.dsbot.core.commands.CommandAdapter;
+import ru.zont.dsbot.core.commands.Commands;
+import ru.zont.dsbot.core.commands.ExternalCallable;
+import ru.zont.dsbot.core.tools.Messages;
 import ru.zont.rgdsb.NotImplementedException;
 import ru.zont.rgdsb.SubprocessListener;
 
@@ -19,7 +23,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static ru.zont.dsbot.core.Strings.STR;
+import static ru.zont.dsbot.core.tools.Strings.STR;
 
 public class Exec extends CommandAdapter implements ExternalCallable {
     private static long nextPid = 1;
