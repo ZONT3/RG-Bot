@@ -133,7 +133,7 @@ public class GMs extends LongCommandAdapter {
         // TODO rework this
 
         String[] args = parseArgs(this, event);
-        if (args.length >= 2 && (args[1].toLowerCase().equals("get") || (args[1].toLowerCase().equals("list"))))
+        if (args.length >= 2 && (args[1].equalsIgnoreCase("get") || (args[1].equalsIgnoreCase("list"))))
             return true;
         Member member = event.getMember();
         if (member == null) return false;

@@ -1,10 +1,14 @@
 package ru.zont.rgdsb.command.exec;
 
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import ru.zont.dsbot.core.ZDSBot;
 import ru.zont.dsbot.core.commands.CommandAdapter;
 import ru.zont.dsbot.core.commands.Commands;
+import ru.zont.rgdsb.tools.Configs;
 
 import java.io.File;
 import java.util.Properties;
@@ -36,6 +40,21 @@ public class Do extends CommandAdapter {
         File main = new File(dir, "main.py");
         if (!main.exists()) throw new UserInvalidArgumentException(STR.getString("comm.do.err.name"));
         return main.getAbsolutePath();
+    }
+
+    @Override
+    public boolean checkPermission(MessageReceivedEvent event) {
+        final Member member = event.getMember();
+        if (member == null) return false;
+        if (member.hasPermission(Permission.ADMINISTRATOR)) return true;
+
+        Role mapper = event.getGuild().getRoleById(Configs.getRoleMapperID());
+        if (mapper != null)
+            for (Role role: member.getRoles())
+                if (role.getPosition() >= mapper.getPosition())
+                    return true;
+
+        return false;
     }
 
     @Override
