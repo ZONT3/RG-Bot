@@ -25,19 +25,19 @@ public class Do extends CommandAdapter {
     @Override
     public void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException {
         final Input input = parseInput(this, event);
-        final String raw = input.getRaw();
-        if (!raw.matches("[\\w\\-. ]+"))
+        String name = input.getArg(0);
+        if (!name.matches("[\\w\\-.]+"))
             throw new UserInvalidArgumentException(STR.getString("comm.do.err.name"));
+        if (name.endsWith(".py"))
+            name = name.substring(0, name.length() - 3);
 
         Commands.call(Exec.class,
-                String.format("-V \"--name=%s\" python -X utf8 -u %s", raw, resolveMain(raw.toLowerCase())),
+                String.format("-V \"--name=%s\" python -X utf8 -u %s", name, resolveScript(name.toLowerCase())),
                 event, getBot());
     }
 
-    private String resolveMain(String raw) {
-        File dir = new File("scripts", raw);
-        if (!dir.exists()) throw new UserInvalidArgumentException(STR.getString("comm.do.err.name"));
-        File main = new File(dir, "main.py");
+    private String resolveScript(String raw) {
+        File main = new File("scripts", raw + ".py");
         if (!main.exists()) throw new UserInvalidArgumentException(STR.getString("comm.do.err.name"));
         return main.getAbsolutePath();
     }
