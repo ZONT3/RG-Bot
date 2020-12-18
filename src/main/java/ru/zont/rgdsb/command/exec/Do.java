@@ -32,7 +32,7 @@ public class Do extends CommandAdapter {
             name = name.substring(0, name.length() - 3);
 
         Commands.call(Exec.class,
-                String.format("-V \"--name=%s\" python -X utf8 -u %s", name, resolveScript(name.toLowerCase())),
+                String.format("-V \"--name=%s\" python -X utf8 -u %s", name, resolveScript(name) + input.stripPrefixOpts().replaceFirst(name, "")),
                 event, getBot());
     }
 
