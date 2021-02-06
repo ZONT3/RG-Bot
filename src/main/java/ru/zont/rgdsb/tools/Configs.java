@@ -24,7 +24,7 @@ public class Configs {
         return getID("ROLE_GM");
     }
 
-    public static String getRoleMapperID() {
-        return getID("ROLE_MAPPER");
+    public static String getRoleExecutorID() {
+        return getID("ROLE_EXECUTOR");
     }
 }

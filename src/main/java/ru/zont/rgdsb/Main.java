@@ -20,6 +20,7 @@ public class Main extends ListenerAdapter {
             setProperty("ROLE_PLAYER", "0");
             setProperty("ROLE_GM", "0");
             setProperty("ROLE_GGM", "0");
+            setProperty("ROLE_EXECUTOR", "0");
             setProperty("CHANNEL_PLAYERS", "0");
             setProperty("CHANNEL_STATUS", "0");
             setProperty("command_prefix", "//");

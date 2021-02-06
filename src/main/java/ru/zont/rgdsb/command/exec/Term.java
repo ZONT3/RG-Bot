@@ -57,4 +57,9 @@ public class Term extends CommandAdapter {
     protected Properties getPropsDefaults() {
         return null;
     }
+
+    @Override
+    public boolean checkPermission(MessageReceivedEvent event) {
+        return false;
+    }
 }

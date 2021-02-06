@@ -32,6 +32,11 @@ public class Status extends CommandAdapter {
     }
 
     @Override
+    public boolean checkPermission(MessageReceivedEvent event) {
+        return true;
+    }
+
+    @Override
     public void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException {
         Role gm = null;
         try {

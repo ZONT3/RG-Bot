@@ -48,10 +48,10 @@ public class Do extends CommandAdapter {
         if (member == null) return false;
         if (member.hasPermission(Permission.ADMINISTRATOR)) return true;
 
-        Role mapper = event.getGuild().getRoleById(Configs.getRoleMapperID());
-        if (mapper != null)
+        Role executor = event.getGuild().getRoleById(Configs.getRoleExecutorID());
+        if (executor != null)
             for (Role role: member.getRoles())
-                if (role.getPosition() >= mapper.getPosition())
+                if (role.getPosition() >= executor.getPosition())
                     return true;
 
         return false;

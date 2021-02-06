@@ -27,6 +27,11 @@ public class Ping extends CommandAdapter {
     }
 
     @Override
+    public boolean checkPermission(MessageReceivedEvent event) {
+        return true;
+    }
+
+    @Override
     public String getSynopsis() {
         return "ping";
     }

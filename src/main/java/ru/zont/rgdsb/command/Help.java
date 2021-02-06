@@ -32,6 +32,11 @@ public class Help extends CommandAdapter {
     }
 
     @Override
+    public boolean checkPermission(MessageReceivedEvent event) {
+        return true;
+    }
+
+    @Override
     public void onRequest(@NotNull MessageReceivedEvent event) {
         String inpt = Commands.parseRaw(this, event);
         CommandAdapter comm = null;
