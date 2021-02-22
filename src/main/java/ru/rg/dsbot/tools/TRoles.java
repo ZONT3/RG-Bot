@@ -28,8 +28,7 @@ public class TRoles {
              Statement st = connection.createStatement()) {
             ResultSet set = st.executeQuery("SELECT " +
                     "p_id, p_name, p_id_dis, p_uid, p_equipment, " +
-                    "p_lastloc, p_lastupd, p_lastservertime, p_roles, " +
-                    "p_side " +
+                    "p_lastupd, p_lastservertime, p_roles " +
                     "FROM profiles WHERE p_roles!='[]'");
 
             ArrayList<Profile> res = new ArrayList<>();
@@ -49,8 +48,7 @@ public class TRoles {
              Statement st = connection.createStatement()) {
             final ResultSet res = st.executeQuery("SELECT " +
                     "p_id, p_name, p_id_dis, p_uid, p_equipment, " +
-                    "p_lastloc, p_lastupd, p_lastservertime, p_roles, " +
-                    "p_side " +
+                    "p_lastupd, p_lastservertime, p_roles " +
                     "FROM profiles WHERE p_id_dis='" + userid + "'");
             if (!res.next())
                 throw new DescribedException(STR.getString("comms.err.unknown_person.title"),
@@ -69,8 +67,7 @@ public class TRoles {
              Statement st = connection.createStatement()) {
             final ResultSet res = st.executeQuery("SELECT " +
                     "p_id, p_name, p_id_dis, p_uid, p_equipment, " +
-                    "p_lastloc, p_lastupd, p_lastservertime, p_roles, " +
-                    "p_side " +
+                    "p_lastupd, p_lastservertime, p_roles " +
                     "FROM profiles WHERE p_uid='" + userid + "'");
             if (!res.next()) return null;
             long disID = res.getLong("p_id_dis");
@@ -170,6 +167,22 @@ public class TRoles {
             }
 
             return time;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String getArmaName(String steamid64) {
+        try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
+             Statement st = connection.createStatement()) {
+            ResultSet resultSet = st.executeQuery("SELECT c_name FROM characters WHERE c_uid='" + steamid64 + "'");
+
+            while (resultSet.next()) {
+                String name = resultSet.getString(1);
+                if (name != null && !name.isEmpty())
+                    return name;
+            }
+            return null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

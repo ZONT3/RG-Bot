@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ru.rg.dsbot.tools.Tools.trimNick;
-import static ru.zont.dsbot2.tools.ZDSBStrings.*;
+import static ru.rg.dsbot.Strings.*;
 
 public class TStatus {
     public static final int ONLINE_TIMEOUT = 45000;
@@ -43,7 +43,7 @@ public class TStatus {
             final Integer storedRecord = record.restore((Integer) 52);
             int rec = Math.max(count, storedRecord);
 
-            final ResultSet rs2 = st.executeQuery("SELECT COUNT(*) FROM profiles");
+            final ResultSet rs2 = st.executeQuery("SELECT COUNT(DISTINCT c_uid) FROM characters");
             if (!rs2.next()) throw new RuntimeException("No result from database");
             int total = rs2.getInt(1);
 

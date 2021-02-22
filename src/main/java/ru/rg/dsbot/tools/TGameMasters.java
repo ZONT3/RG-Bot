@@ -35,9 +35,15 @@ public class TGameMasters {
                 GM gm = new GM();
                 gm.steamid64 = resultSet.getString("p_uid");
                 gm.userid = resultSet.getLong("p_id_dis");
-                gm.armaname = resultSet.getString("p_name");
+                gm.armaname = TRoles.getArmaName(gm.steamid64);
                 gm.lastlogin = TRoles.getLastLogin(gm.steamid64);
                 res.add(gm);
+
+                if (gm.armaname != null) {
+                    st.executeUpdate(
+                            "UPDATE profiles SET p_name = '"+gm.armaname+"' " +
+                            "WHERE p_uid = '"+gm.steamid64+"'" );
+                }
             }
 
         } catch (SQLException e) {
@@ -54,7 +60,7 @@ public class TGameMasters {
             Statement st = connection.createStatement()) {
             final ResultSet resultSet = st.executeQuery(
                     "SELECT timestamp FROM assign_log " +
-                    "WHERE guid = '" + steamid64 + "' AND role = 1 AND action != 'rm'" +
+                    "WHERE uid = '" + steamid64 + "' AND role = 1 AND action != 'rm'" +
                     "ORDER BY id DESC LIMIT 1");
             if (!resultSet.next()) return null;
             return resultSet.getTimestamp("timestamp");
@@ -92,9 +98,9 @@ public class TGameMasters {
                 for (GM gm: gms.subList(0, splitIndex)) {
                     long lastLogin = gm.lastlogin;
                     switch (getEmo((System.currentTimeMillis() - lastLogin) / 1000 / 60 / 60)) {
-                        case " :anger:": anger++; break;
-                        case " :zzz:": sleep++; break;
-                        case " :octagonal_sign:": warn++; break;
+                        case " :anger:" -> anger++;
+                        case " :zzz:" -> sleep++;
+                        case " :octagonal_sign:" -> warn++;
                     }
                 }
                 builder.appendDescription(String.format(
