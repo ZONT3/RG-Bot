@@ -40,7 +40,7 @@ public class TStatus {
             int count = players.size();
             long time = rs1.getTimestamp("sv_lastupd").getTime();
             long uptime = (long) (rs1.getFloat("sv_time") * 1000F);
-            final Integer storedRecord = record.restore((Integer) 86);
+            final Integer storedRecord = record.restore((Integer) 52);
             int rec = Math.max(count, storedRecord);
 
             final ResultSet rs2 = st.executeQuery("SELECT COUNT(*) FROM profiles");

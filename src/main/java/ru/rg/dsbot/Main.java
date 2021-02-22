@@ -2,6 +2,7 @@ package ru.rg.dsbot;
 
 import ru.rg.dsbot.commands.GMs;
 import ru.rg.dsbot.commands.Roles;
+import ru.rg.dsbot.listeners.LServerStatus;
 import ru.zont.dsbot2.ZDSBot;
 import ru.zont.dsbot2.ZDSBotBuilder;
 import ru.zont.dsbot2.commands.implement.Help;
@@ -54,6 +55,7 @@ public class Main {
                         Exec.class, Cmd.class, Do.class, Term.class,
                         Roles.class, GMs.class
                 )
+                .addListeners(new LServerStatus())
                 .build();
     }
 
