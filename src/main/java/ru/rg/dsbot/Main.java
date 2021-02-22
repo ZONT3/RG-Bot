@@ -1,5 +1,7 @@
 package ru.rg.dsbot;
 
+import ru.rg.dsbot.commands.GMs;
+import ru.rg.dsbot.commands.Roles;
 import ru.zont.dsbot2.ZDSBot;
 import ru.zont.dsbot2.ZDSBotBuilder;
 import ru.zont.dsbot2.commands.implement.Help;
@@ -49,7 +51,8 @@ public class Main {
                 .defaultSetup()
                 .setConfig(new Config())
                 .addCommands(Help.class,
-                        Exec.class, Cmd.class, Do.class, Term.class
+                        Exec.class, Cmd.class, Do.class, Term.class,
+                        Roles.class, GMs.class
                 )
                 .build();
     }

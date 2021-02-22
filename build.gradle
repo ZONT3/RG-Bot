@@ -25,6 +25,7 @@ dependencies {
     compile group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
     // https://mvnrepository.com/artifact/commons-cli/commons-cli
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.4'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.0'
 
     compile project(':core')
 }
