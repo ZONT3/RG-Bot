@@ -27,7 +27,7 @@ public class TRoles {
         try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
              Statement st = connection.createStatement()) {
             ResultSet set = st.executeQuery("SELECT " +
-                    "p_id, p_name, p_id_dis, p_uid, p_equipment, " +
+                    "p_id, p_name, p_id_dis, p_uid, " +
                     "p_lastupd, p_lastservertime, p_roles " +
                     "FROM profiles WHERE p_roles!='[]'");
 
@@ -47,7 +47,7 @@ public class TRoles {
         try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
              Statement st = connection.createStatement()) {
             final ResultSet res = st.executeQuery("SELECT " +
-                    "p_id, p_name, p_id_dis, p_uid, p_equipment, " +
+                    "p_id, p_name, p_id_dis, p_uid, " +
                     "p_lastupd, p_lastservertime, p_roles " +
                     "FROM profiles WHERE p_id_dis='" + userid + "'");
             if (!res.next())

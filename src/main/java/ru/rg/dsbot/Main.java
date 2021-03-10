@@ -31,19 +31,11 @@ public class Main {
         public final Entry myChannel = new Entry("792009238062039070");
         public final Entry myRole = new Entry("777555228");
 
-        public final Entry prefix = new Entry("//");
-        @OverrideEntry
-        public final Entry channel_log = new Entry("813383481241501748", true);
-        @OverrideEntry
-        public Entry version = new Entry(getVersion(), true);
-        @OverrideEntry
-        public Entry version_str = new Entry("RG Spider v.%s", true);
-
         public Config() {
-            super.prefix = prefix;
-            super.channel_log = channel_log;
-            super.version = version;
-            super.version_str = version_str;
+            super.prefix = new Entry("//");
+            super.channel_log = new Entry("813383481241501748", true);
+            super.version = new Entry(getVersion(), true);
+            super.version_str = new Entry("RG Spider v.%s", true);
         }
     }
 

@@ -24,10 +24,10 @@ public class Roles extends CommandAdapter {
         final MessageReceivedEvent event = input.getEvent();
         Commons.rolesLikeRouter(0, this::set, this::rm, this::get)
                 .setError(STR.getString("comms.gms.err.first_arg"))
-                .addCase((i, e) ->
+                .addCase((i) ->
                         Commons.rolesLikeRouter(1, this::autoSet, this::autoRm, this::autoGet)
-                                .acceptInput(i, e), "auto")
-                .acceptInput(input, event);
+                                .acceptInput(i), "auto")
+                .acceptInput(input);
     }
 
     private int parseID(String arg) {
@@ -64,17 +64,17 @@ public class Roles extends CommandAdapter {
         return new Profile(uid, userid, roles);
     }
 
-    private void set(Input input, MessageReceivedEvent event) {
+    private void set(Input input) {
         input.assertArgCount(3);
         final List<String> args = Arrays.asList(input.getArgs());
         int id = parseID(args.get(1));
         final Profile profile = fetchProfile(args.get(2), args.size() >= 4 ? args.get(3) : null);
         profile.roles.add(id);
         commitRoles(profile.roles, profile.uid, profile.userid, id, "add");
-        msgDescribeUpdate(profile, event.getChannel());
+        msgDescribeUpdate(profile, input.getChannel());
     }
 
-    private void rm(Input input, MessageReceivedEvent event) {
+    private void rm(Input input) {
         input.assertArgCount(3);
         List<String> args = Arrays.asList(input.getArgs());
         int id = parseID(args.get(1));
@@ -94,13 +94,13 @@ public class Roles extends CommandAdapter {
         final Profile profile = fetchProfile(userid < 0 ? null : arg + "", steamid);
         profile.roles.remove(id);
         commitRoles(profile.roles, profile.uid, profile.userid, id, "rm");
-        msgDescribeUpdate(profile, event.getChannel());
+        msgDescribeUpdate(profile, input.getChannel());
     }
 
-    private void get(Input input, MessageReceivedEvent event) {
+    private void get(Input input) {
         List<String> args = Arrays.asList(input.getArgs());
         if (args.size() < 2) {
-            event.getChannel().sendMessage(msgList()).queue();
+            input.getChannel().sendMessage(msgList()).queue();
             return;
         }
         final String arg = args.get(1);
@@ -119,22 +119,22 @@ public class Roles extends CommandAdapter {
         }
 
         if (id != 0) {
-            event.getChannel().sendMessage(msgListByID(fetchProfiles(id), id)).queue();
+            input.getChannel().sendMessage(msgListByID(fetchProfiles(id), id)).queue();
         } else {
             final Profile profile = fetchProfile(userid < 0 ? null : arg, steamid);
-            msgDescribeUpdate(profile, event.getChannel(), STR.getString("comms.roles.updated.title.d"));
+            msgDescribeUpdate(profile, input.getChannel(), STR.getString("comms.roles.updated.title.d"));
         }
     }
 
-    private void autoSet(Input input, MessageReceivedEvent event) {
+    private void autoSet(Input input) {
         throw new NotImplementedException();
     }
 
-    private void autoGet(Input input, MessageReceivedEvent event) {
+    private void autoGet(Input input) {
         throw new NotImplementedException();
     }
 
-    private void autoRm(Input input, MessageReceivedEvent event) {
+    private void autoRm(Input input) {
         throw new NotImplementedException();
     }
 
