@@ -17,8 +17,6 @@ import static ru.rg.dsbot.Strings.*;
 
 
 public class TRoles {
-    public static final int INFISTAR_1 = -1;
-    public static final int INFISTAR_2 = -2;
     public static final int ZEUS = 1;
     public static final int ZEUS_HIDDEN = 101;
     public static final int COLOR = 0xd700e7;
@@ -66,7 +64,7 @@ public class TRoles {
         try (Connection connection = DriverManager.getConnection(Globals.dbConnection);
              Statement st = connection.createStatement()) {
             final ResultSet res = st.executeQuery("SELECT " +
-                    "p_id, p_name, p_id_dis, p_uid, p_equipment, " +
+                    "p_id, p_name, p_id_dis, p_uid, " +
                     "p_lastupd, p_lastservertime, p_roles " +
                     "FROM profiles WHERE p_uid='" + userid + "'");
             if (!res.next()) return null;
