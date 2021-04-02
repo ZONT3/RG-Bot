@@ -7,6 +7,7 @@ import ru.rg.dsbot.listeners.LServerStatus;
 import ru.zont.dsbot2.ZDSBot;
 import ru.zont.dsbot2.ZDSBotBuilder;
 import ru.zont.dsbot2.commands.implement.Help;
+import ru.zont.dsbot2.commands.implement.Say;
 import ru.zont.dsbot2.commands.implement.exec.Cmd;
 import ru.zont.dsbot2.commands.implement.exec.Do;
 import ru.zont.dsbot2.commands.implement.exec.Exec;
@@ -45,7 +46,7 @@ public class Main {
         ZDSBot build = new ZDSBotBuilder(args[0])
                 .defaultSetup()
                 .setConfig(new Config())
-                .addCommands(Help.class,
+                .addCommands(Help.class, Say.class,
                         Exec.class, Cmd.class, Do.class, Term.class,
                         Roles.class, GMs.class
                 )
