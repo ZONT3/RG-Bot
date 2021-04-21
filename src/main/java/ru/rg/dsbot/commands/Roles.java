@@ -2,6 +2,7 @@ package ru.rg.dsbot.commands;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import org.jetbrains.annotations.NotNull;
 import ru.zont.dsbot2.NotImplementedException;
 import ru.zont.dsbot2.ZDSBot;
 import ru.zont.dsbot2.commands.CommandAdapter;
@@ -17,7 +18,6 @@ import static ru.rg.dsbot.tools.TRoles.*;
 import static ru.zont.dsbot2.tools.ZDSBStrings.STR;
 
 public class Roles extends CommandAdapter {
-
     private final Data<HashMap<Long, HashSet<Integer>>> allowance = new Data<>("roles-allowance");
 
     public Roles(ZDSBot.GuildContext context) {
@@ -33,7 +33,7 @@ public class Roles extends CommandAdapter {
                                 .acceptInput(i), "auto")
                 .addCase(this::allow, "allow")
                 .addCase(this::deny, "deny")
-                .acceptInput(input);
+                .acceptInput(input, false);
     }
 
     private int parseID(String arg) {
@@ -73,14 +73,11 @@ public class Roles extends CommandAdapter {
     private void allow(Input input) {
         input.assertArgCount(3, false);
         long dsRoleID = Commons.mentionToID(input.getArg(1, false));
-        String idArg = input.getArg(2, false);
-        if (!idArg.matches("\\d+"))
-            throw new UserInvalidInputException("comms.roles.err.arg3");
-        int id = Integer.parseInt(idArg);
 
         allowance.op(new HashMap<>(), map -> {
+            ArrayList<Integer> ids = idVararg(input);
             HashSet<Integer> set = map.getOrDefault(dsRoleID, new HashSet<>());
-            set.add(id);
+            set.addAll(ids);
             map.put(dsRoleID, set);
         });
         ZDSBMessages.addOK(input.getMessage());
@@ -89,26 +86,35 @@ public class Roles extends CommandAdapter {
     private void deny(Input input) {
         input.assertArgCount(2, false);
         long dsRoleID = Commons.mentionToID(input.getArg(1, false));
-        String idArg = input.getArg(2, false);
-        Integer id;
-        if (idArg != null && idArg.matches("\\d+"))
-            id = Integer.valueOf(idArg);
-        else id = null;
 
         allowance.op(new HashMap<>(), map -> {
-            if (id == null)
+            ArrayList<Integer> ids = idVararg(input);
+            if (ids.isEmpty())
                 map.remove(dsRoleID);
             else {
                 HashSet<Integer> set = map.getOrDefault(dsRoleID, new HashSet<>());
-                set.remove(id);
+                set.removeAll(ids);
                 map.put(dsRoleID, set);
             }
         });
         ZDSBMessages.addOK(input.getMessage());
     }
 
+    @NotNull
+    private ArrayList<Integer> idVararg(Input input) {
+        ArrayList<Integer> ids = new ArrayList<>();
+        String idArg;
+        for (int i = 2; (idArg = input.getArg(i, false)) != null; i++) {
+            if (!idArg.matches("\\d+"))
+                throw new UserInvalidInputException("comms.roles.err.arg3");
+            int id = Integer.parseInt(idArg);
+            ids.add(id);
+        }
+        return ids;
+    }
+
     private void set(Input input) {
-        input.assertArgCount(3);
+        input.assertArgCount(3, false);
         final List<String> args = Arrays.asList(input.getArgs(false));
         int id = parseID(args.get(1));
         final Profile profile = fetchProfile(args.get(2), args.size() >= 4 ? args.get(3) : null);
