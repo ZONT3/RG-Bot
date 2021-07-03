@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import ru.rg.dsbot.Globals;
+import ru.zont.dsbot2.tools.Data;
 import ru.zont.dsbot2.tools.ZDSBStrings;
 
 
@@ -23,7 +24,7 @@ public class TStatus {
     private static long nextRetrieve = 0;
     private static ServerInfoStruct cached = null;
 
-    private static final SavedData<Integer> record = new SavedData<>(Integer.class, "record");
+    private static final Data<Integer> record = new Data<>("record");
 
     public static synchronized ServerInfoStruct retrieveInfo() {
         if (System.currentTimeMillis() < nextRetrieve && cached != null) return cached;
@@ -40,7 +41,7 @@ public class TStatus {
             int count = players.size();
             long time = rs1.getTimestamp("sv_lastupd").getTime();
             long uptime = (long) (rs1.getFloat("sv_time") * 1000F);
-            final Integer storedRecord = record.restore((Integer) 52);
+            final Integer storedRecord = record.op(55, arg -> arg);
             int rec = Math.max(count, storedRecord);
 
             final ResultSet rs2 = st.executeQuery("SELECT COUNT(DISTINCT c_uid) FROM characters");
@@ -52,7 +53,7 @@ public class TStatus {
             long currentTime = rs3.getTimestamp(1).getTime();
 
             if (rec > storedRecord)
-                record.save(rec);
+                record.set(rec);
             final ArrayList<TGameMasters.GM> gms = TGameMasters.retrieve();
             gms.removeIf(gm -> (System.currentTimeMillis() - gm.lastlogin) > 120000);
             res = new ServerInfoStruct(count, currentTime - time, uptime, gms, rec, total);
